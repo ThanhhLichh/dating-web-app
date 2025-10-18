@@ -1,0 +1,62 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+
+# --- Virtual Environment ---
+venv/
+env/
+.venv/
+ENV/
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs & Temp ---
+*.log
+*.tmp
+*.bak
+
+# --- Database / Cache ---
+*.db
+*.sqlite3
+*.sqlite
+instance/
+.cache/
+
+# --- Pydantic / FastAPI related ---
+*.env
+.env.local
+.env.*.local
+
+# --- Node (nếu có frontend trong cùng repo) ---
+node_modules/
+dist/
+build/
+
+# --- PyInstaller ---
+*.spec
+
+# --- Coverage / Testing ---
+htmlcov/
+.tox/
+.nox/
+.coverage
+.cache
+.pytest_cache/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Misc ---
+*.egg-info/
