@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { login, register } from "../services/authService";
 import "./Auth.css";
 import logo from "../assets/logo.svg";
-import newHeroImage from "../assets/sig2.png";
+import img1 from "../assets/sig4.png";
+import img2 from "../assets/sig2.png";
+import img3 from "../assets/sig1.png";
+
+
+
 
 export default function AuthLanding() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +19,74 @@ export default function AuthLanding() {
     gender: "male",
     birthday: "",
   });
+
+const images = [img1, img2, img3];
+const [current, setCurrent] = useState(0);
+const [isAnimating, setIsAnimating] = useState(false);
+const [direction, setDirection] = useState("next");
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    handleNext();
+  }, 5000); // 5s đổi ảnh
+  return () => clearInterval(interval);
+}, []);
+
+const handleNext = () => {
+  if (isAnimating) return;
+  setDirection("next");
+  setIsAnimating(true);
+  setCurrent((prev) => (prev + 1) % images.length);
+  setTimeout(() => setIsAnimating(false), 900);
+};
+
+const handlePrev = () => {
+  if (isAnimating) return;
+  setDirection("prev");
+  setIsAnimating(true);
+  setCurrent((prev) => (prev - 1 + images.length) % images.length);
+  setTimeout(() => setIsAnimating(false), 900);
+};
+
+
+
+
+    useEffect(() => {
+  const container = document.querySelector(".heart-container");
+  if (!container) return;
+
+  const createHeart = () => {
+    // Tạo 2–3 trái tim mỗi lần cho dày hơn
+    const count = Math.floor(Math.random() * 2) + 2;
+    for (let i = 0; i < count; i++) {
+      const heart = document.createElement("span");
+      heart.className = "floating-heart";
+      heart.innerText = "❤️";
+
+      // Chỉ xuất hiện ở 2 rìa ảnh (0–20% hoặc 80–100%)
+      const side = Math.random() < 0.5 ? "left" : "right";
+      const offset = side === "left"
+        ? Math.random() * 15 // trái
+        : 85 + Math.random() * 10; // phải
+      heart.style.left = `${offset}%`;
+
+      // Ngẫu nhiên kích thước và độ trong
+      heart.style.fontSize = `${14 + Math.random() * 18}px`;
+      heart.style.opacity = `${0.6 + Math.random() * 0.4}`;
+
+      container.appendChild(heart);
+
+      // Xóa sau 7s
+      setTimeout(() => heart.remove(), 7000);
+    }
+  };
+
+  // Tạo nhanh hơn: mỗi 250ms
+  const interval = setInterval(createHeart, 650);
+  return () => clearInterval(interval);
+}, []);
+
+
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -112,8 +185,26 @@ export default function AuthLanding() {
 
         {/* RIGHT */}
         <div className="right">
-          <img src={newHeroImage} alt="Love illustration" />
-        </div>
+  <div className="slider">
+    {images.map((img, index) => (
+  <img
+    key={index}
+    src={img}
+    alt={`slide-${index}`}
+    className={`slide-image ${index === current ? `active ${direction}` : ""}`}
+  />
+))}
+
+
+    <button className="arrow left" onClick={handlePrev}>‹</button>
+    <button className="arrow right" onClick={handleNext}>›</button>
+
+    <div className="heart-container"></div>
+  </div>
+</div>
+
+
+
       </div>
 
       {/* ===== MODAL ===== */}
@@ -167,6 +258,15 @@ export default function AuthLanding() {
           </div>
         </div>
       )}
+
+            {/* ===== SIMPLE FOOTER ===== */}
+      <footer className="simple-footer">
+        <p>
+          © 2025 LoveConnect · Thiết kế & phát triển bởi 
+          <strong> Nhóm 9 – Lập Trình Web</strong>
+        </p>
+      </footer>
+
     </>
   );
 }
