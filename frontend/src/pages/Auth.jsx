@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { login, register } from "../services/authService";
 import "./Auth.css";
@@ -19,6 +20,8 @@ export default function AuthLanding() {
     gender: "male",
     birthday: "",
   });
+  const navigate = useNavigate();
+
 
 const images = [img1, img2, img3];
 const [current, setCurrent] = useState(0);
@@ -91,21 +94,33 @@ const handlePrev = () => {
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (isLogin) {
-        await login({ email: form.email, password: form.password });
+  e.preventDefault();
+  try {
+    if (isLogin) {
+      const res = await login({ email: form.email, password: form.password });
+      
+      // ✅ Sửa tại đây — backend trả về access_token chứ không phải token
+      if (res?.access_token) {
+        localStorage.setItem("token", res.access_token); // Lưu token
         alert("Đăng nhập thành công!");
+        navigate("/home"); // Điều hướng sang trang Home
       } else {
-        await register(form);
-        alert("Đăng ký thành công! Hãy đăng nhập.");
-        setIsLogin(true);
+        alert("Không nhận được token từ server!");
       }
-      setShowModal(false);
-    } catch {
-      alert("Có lỗi xảy ra!");
+
+    } else {
+      await register(form);
+      alert("Đăng ký thành công! Hãy đăng nhập.");
+      setIsLogin(true);
     }
-  };
+
+    setShowModal(false);
+  } catch (err) {
+    console.error(err);
+    alert("Có lỗi xảy ra!");
+  }
+};
+
 
   return (
     <>
