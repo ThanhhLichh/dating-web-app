@@ -180,12 +180,44 @@ def update_interests(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    # ✅ Xóa toàn bộ sở thích cũ của user
     db.execute(text("DELETE FROM user_interests WHERE user_id = :uid"), {"uid": current_user.user_id})
+
     for name in interests:
-        interest = db.execute(text("SELECT interest_id FROM interests WHERE name = :n"), {"n": name}).fetchone()
-        if interest:
-            db.execute(text("INSERT INTO user_interests (user_id, interest_id) VALUES (:u, :i)"),
-                       {"u": current_user.user_id, "i": interest[0]})
+        if not name.strip():
+            continue
+
+        # ✅ Chuẩn hóa chữ (bỏ khoảng trắng + chữ đầu in hoa)
+        name = name.strip().capitalize()
+
+        # ✅ Kiểm tra sở thích đã tồn tại chưa
+        existing = db.execute(text("SELECT interest_id FROM interests WHERE LOWER(name) = LOWER(:n)"), {"n": name}).fetchone()
+
+        # ✅ Nếu chưa có -> thêm mới vào bảng interests
+        if not existing:
+            db.execute(text("INSERT INTO interests (name) VALUES (:n)"), {"n": name})
+            db.commit()
+            existing = db.execute(text("SELECT interest_id FROM interests WHERE name = :n"), {"n": name}).fetchone()
+
+        # ✅ Thêm liên kết user - interest
+        db.execute(
+            text("INSERT INTO user_interests (user_id, interest_id) VALUES (:u, :i)"),
+            {"u": current_user.user_id, "i": existing[0]},
+        )
+
     db.commit()
-    return {"message": "Cập nhật sở thích thành công", "interests": interests}
+
+    # ✅ Trả về danh sách cập nhật mới nhất từ DB
+    result = db.execute(
+        text("""
+            SELECT i.name FROM interests i
+            JOIN user_interests ui ON i.interest_id = ui.interest_id
+            WHERE ui.user_id = :uid
+        """),
+        {"uid": current_user.user_id}
+    ).fetchall()
+
+    return {"message": "✅ Cập nhật sở thích thành công", "interests": [r[0] for r in result]}
+
+
 

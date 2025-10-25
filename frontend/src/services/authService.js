@@ -1,10 +1,12 @@
 import api from "./api";
 
+// 🧩 Đăng ký
 export const register = async (data) => {
-  const res = await api.post("/users/", data);
+  const res = await api.post("/auth/register", data); // 🔁 sửa lại endpoint
   return res.data;
 };
 
+// 🔑 Đăng nhập
 export const login = async (data) => {
   const res = await api.post("/auth/login", data);
 

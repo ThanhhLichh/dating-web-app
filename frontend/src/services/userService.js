@@ -31,8 +31,12 @@ export const uploadAvatar = async (file) => {
 
 export const updateInterests = async (interests) => {
   const token = localStorage.getItem("token");
-  const res = await api.put("/users/me/interests", interests, {
-    headers: { Authorization: `Bearer ${token}` },
+  const res = await api.put("/users/me/interests", JSON.stringify(interests), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
   });
   return res.data;
 };
+

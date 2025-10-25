@@ -292,6 +292,65 @@
   color: #ff7b66;
 }
 
+.edit-modal select,
+.edit-modal input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.edit-modal select:focus,
+.edit-modal input[type="number"]:focus {
+  border-color: #ff4b2b;
+}
+
+.interests-edit {
+  margin-top: 10px;
+}
+
+.interests-edit input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.interests-edit input:focus {
+  border-color: #ff4b2b;
+}
+
+.selected-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.selected-interests span {
+  background: #ff4b2b;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.selected-interests .remove-interest {
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 
 
 
