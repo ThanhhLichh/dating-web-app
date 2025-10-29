@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine
-from routers import user_router, photo_router, home_router, notification_router
+from routers import user_router, photo_router, home_router, notification_router, match_router, message_router
 from auth import auth_router
 from fastapi.staticfiles import StaticFiles
-
+from websocket import message_ws
 app = FastAPI(title="LoveConnect API ❤️")
 
 # ✅ Thêm CORS middleware (rất quan trọng)
@@ -25,6 +25,9 @@ app.include_router(auth_router.router)
 app.include_router(photo_router.router) 
 app.include_router(home_router.router)
 app.include_router(notification_router.router)
+app.include_router(match_router.router)
+app.include_router(message_router.router)
+app.include_router(message_ws.router)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 

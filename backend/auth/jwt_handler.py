@@ -18,3 +18,11 @@ def verify_access_token(token: str):
         return payload
     except JWTError:
         return None
+def decode_token(token: str):
+    """
+    Giải mã JWT token để lấy payload (dùng cho WebSocket)
+    """
+    payload = verify_access_token(token)
+    if not payload:
+        raise JWTError("Invalid or expired token")
+    return payload
