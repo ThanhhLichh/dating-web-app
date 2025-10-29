@@ -7,7 +7,6 @@ from auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/messages", tags=["Messages"])
 
-
 # 📨 Lấy danh sách tin nhắn trong một match
 @router.get("/{match_id}")
 def get_messages(
@@ -79,14 +78,6 @@ def send_message(
             status_code=403, detail="Bạn không thể gửi tin trong cuộc trò chuyện này"
         )
 
-    # ✅ Lưu tin nhắn vào DB
-    db.execute(
-        text("""
-        INSERT INTO messages (match_id, sender_id, content, type)
-        VALUES (:mid, :sid, :content, 'text')
-    """),
-        {"mid": match_id, "sid": current_user.user_id, "content": content},
-    )
-    db.commit()
-
-    return {"message": "Gửi thành công!"}
+    # ⚠️ KHÔNG lưu tin nhắn ở đây nữa (đã được WebSocket xử lý)
+    # Chỉ trả về xác nhận OK để frontend không lỗi
+    return {"message": "Tin nhắn đã gửi qua WebSocket realtime!"}

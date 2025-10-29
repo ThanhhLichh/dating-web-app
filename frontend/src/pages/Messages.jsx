@@ -60,13 +60,25 @@ useEffect(() => {
 
     // ✅ Khi nhận tin nhắn mới từ server
     ws.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data);
-        setMessages((prev) => [...prev, msg]);
-      } catch (err) {
-        console.error("Lỗi parse message:", err);
-      }
-    };
+  try {
+    const msg = JSON.parse(event.data);
+
+    setMessages((prev) => {
+      // 🔍 Kiểm tra xem tin này đã có chưa
+      const isDuplicate = prev.some(
+        (m) =>
+          m.content === msg.content &&
+          m.sender_id === msg.sender_id &&
+          Math.abs(new Date(m.created_at) - new Date(msg.created_at)) < 2000
+      );
+
+      return isDuplicate ? prev : [...prev, msg];
+    });
+  } catch (err) {
+    console.error("Lỗi parse message:", err);
+  }
+};
+
 
     setSocket(ws);
     return () => ws.close();
@@ -145,7 +157,14 @@ useEffect(() => {
                   />
                   <div className="match-info">
                     <h4>{m.full_name}</h4>
-                    <span>{m.city || "Không rõ"}</span>
+                    <span className="last-msg">
+  {m.last_message
+    ? m.last_message.length > 30
+      ? m.last_message.slice(0, 30) + "..."
+      : m.last_message
+    : "Chưa có tin nhắn"}
+</span>
+
                   </div>
                 </div>
               ))
