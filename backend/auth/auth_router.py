@@ -6,6 +6,7 @@ from models.user_model import User
 from utils.hashing import verify_password, get_password_hash
 from auth.auth_schema import LoginRequest, TokenResponse
 from auth.jwt_handler import create_access_token
+from auth.dependencies import get_current_user
 from pydantic import BaseModel, EmailStr
 from datetime import date
 
@@ -18,10 +19,17 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 def login_user(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không đúng")
 
     if not verify_password(request.password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không đúng")
+
+    # ✅ Cập nhật trạng thái online
+    db.execute(
+        text("UPDATE users SET is_online = 1 WHERE user_id = :uid"),
+        {"uid": user.user_id},
+    )
+    db.commit()
 
     access_token = create_access_token({"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
@@ -39,15 +47,12 @@ class RegisterRequest(BaseModel):
 
 @router.post("/register")
 def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
-    # Kiểm tra trùng email
     existing = db.query(User).filter(User.email == request.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email đã được sử dụng")
 
-    # Hash mật khẩu
     hashed_pw = get_password_hash(request.password)
 
-    # Thêm user mới (các trường khác mặc định NULL)
     new_user = User(
         email=request.email,
         password_hash=hashed_pw,
@@ -58,6 +63,7 @@ def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
         city=None,
         bio=None,
         height=None,
+        is_online=0
     )
 
     db.add(new_user)
@@ -65,3 +71,16 @@ def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return {"message": "✅ Đăng ký thành công", "user_id": new_user.user_id}
+
+
+# ==========================================
+# 🚪 LOGOUT
+# ==========================================
+@router.post("/logout")
+def logout_user(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db.execute(
+        text("UPDATE users SET is_online = 0 WHERE user_id = :uid"),
+        {"uid": current_user.user_id},
+    )
+    db.commit()
+    return {"message": "👋 Đăng xuất thành công!"}

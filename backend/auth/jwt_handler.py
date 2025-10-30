@@ -3,7 +3,7 @@ from jose import JWTError, jwt
 
 SECRET_KEY = "supersecretkey"  # ⚠️ Đặt key mạnh hơn khi deploy thật
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 tiếng
+ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 1 tiếng
 
 def create_access_token(data: dict):
     to_encode = data.copy()

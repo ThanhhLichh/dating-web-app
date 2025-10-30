@@ -3,14 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/logo.svg";
 import defaultAvatar from "../assets/default-avatar.webp";
-import {
-  FaHome,
-  FaUser,
-  FaComments,
-  FaBell,
-} from "react-icons/fa";
+import { FaHome, FaUser, FaComments, FaBell } from "react-icons/fa";
 import api from "../services/api";
 import { getNotifications } from "../services/notificationService";
+import { logout,  } from "../services/authService"; // ✅ import logout mới
 
 export default function Navbar() {
   const [user, setUser] = useState({ full_name: "Người dùng", avatar: "" });
@@ -19,7 +15,9 @@ export default function Navbar() {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
-  // Lấy thông tin người dùng
+
+
+  // ✅ Lấy thông tin người dùng hiện tại
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
@@ -46,7 +44,7 @@ export default function Navbar() {
     fetchUser();
   }, []);
 
-  // Lấy danh sách thông báo
+  // ✅ Lấy danh sách thông báo
   useEffect(() => {
     const fetchNotif = async () => {
       try {
@@ -58,12 +56,6 @@ export default function Navbar() {
     };
     fetchNotif();
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/";
-  };
 
   const handleLikeBack = (senderId) => {
     console.log("Thích lại:", senderId);
@@ -110,12 +102,11 @@ export default function Navbar() {
           <FaComments /> Tin nhắn
         </a>
         <a
-  onClick={() => navigate("/notifications")}
-  className={location.pathname === "/notifications" ? "active" : ""}
->
-  <FaBell /> Thông báo
-</a>
-
+          onClick={() => navigate("/notifications")}
+          className={location.pathname === "/notifications" ? "active" : ""}
+        >
+          <FaBell /> Thông báo
+        </a>
       </div>
 
       {/* RIGHT: Notifications + User */}
@@ -138,7 +129,7 @@ export default function Navbar() {
           {showMenu && (
             <div className="dropdown-menu">
               <a onClick={() => navigate("/profile")}>Trang cá nhân</a>
-              <button onClick={handleLogout}>Đăng xuất</button>
+              <button onClick={() => logout()}>Đăng xuất</button> {/* ✅ dùng logout service */}
             </div>
           )}
         </div>
@@ -153,7 +144,9 @@ export default function Navbar() {
             notifications.map((n) => (
               <div key={n.noti_id} className="notif-item">
                 <img
-                  src={`http://127.0.0.1:8000${n.sender_avatar || "/default-avatar.png"}`}
+                  src={`http://127.0.0.1:8000${
+                    n.sender_avatar || "/default-avatar.png"
+                  }`}
                   alt="sender"
                 />
                 <div>

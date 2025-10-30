@@ -2,7 +2,7 @@ import api from "./api";
 
 // 🧩 Đăng ký
 export const register = async (data) => {
-  const res = await api.post("/auth/register", data); // 🔁 sửa lại endpoint
+  const res = await api.post("/auth/register", data);
   return res.data;
 };
 
@@ -10,12 +10,11 @@ export const register = async (data) => {
 export const login = async (data) => {
   const res = await api.post("/auth/login", data);
 
-  // Lưu token
   const token = res.data.access_token;
   localStorage.setItem("token", token);
 
-  // ✅ Gọi thêm API /users/me để lấy thông tin người dùng
   try {
+    // Lấy thông tin người dùng
     const me = await api.get("/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -25,4 +24,22 @@ export const login = async (data) => {
   }
 
   return res.data;
+};
+
+// 🚪 Đăng xuất (chỉ thủ công)
+export const logout = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    if (token) {
+      await api.post("/auth/logout", {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    }
+  } catch (err) {
+    console.warn("Không thể gọi API logout:", err);
+  } finally {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  }
 };
