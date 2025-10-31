@@ -8,6 +8,14 @@ export const getProfile = async () => {
   return res.data;
 };
 
+export const getProfileById = async (id) => {
+  const token = localStorage.getItem("token");
+  const res = await api.get(`/users/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
 export const updateProfile = async (data) => {
   const token = localStorage.getItem("token");
   const res = await api.put("/users/me", data, {
@@ -39,4 +47,3 @@ export const updateInterests = async (interests) => {
   });
   return res.data;
 };
-

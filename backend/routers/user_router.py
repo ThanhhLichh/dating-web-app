@@ -220,4 +220,29 @@ def update_interests(
     return {"message": "✅ Cập nhật sở thích thành công", "interests": [r[0] for r in result]}
 
 
+# ✅ API xem hồ sơ người khác (read-only)
+@router.get("/{user_id}", response_model=UserProfileResponse)
+def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
 
+    photos = db.execute(
+        text("SELECT photo_id, url, is_avatar FROM photos WHERE user_id = :uid"),
+        {"uid": user.user_id}
+    ).fetchall()
+
+    interests = db.execute(
+        text("""
+            SELECT i.name FROM interests i
+            JOIN user_interests ui ON i.interest_id = ui.interest_id
+            WHERE ui.user_id = :uid
+        """),
+        {"uid": user.user_id}
+    ).fetchall()
+
+    return {
+        **user.__dict__,
+        "photos": [dict(p._mapping) for p in photos],
+        "interests": [i[0] for i in interests],
+    }

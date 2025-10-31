@@ -310,93 +310,115 @@
 /* === Modal chi tiết === */
 .modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
-  justify-content: center;
   align-items: center;
-  backdrop-filter: blur(5px);
-  z-index: 1000;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
 }
 
 .modal-content {
   background: #fff;
-  border-radius: 20px;
-  padding: 25px;
+  border-radius: 18px;
+  padding: 30px;
   width: 90%;
-  max-width: 460px;
+  max-width: 850px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
   animation: zoomIn 0.25s ease;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-.modal-avatar {
-  width: 100%;
-  border-radius: 15px;
-  object-fit: cover;
-  height: 300px;
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0.2;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .close-btn {
   position: absolute;
-  right: 15px;
-  top: 12px;
-  border: none;
-  background: transparent;
+  top: 15px;
+  right: 20px;
   font-size: 22px;
+  border: none;
+  background: none;
   cursor: pointer;
-  color: #888;
+  color: #666;
+}
+
+.modal-avatar {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 20px;
 }
 
 .modal-sub {
-  color: #777;
-  margin-top: 8px;
-  font-size: 0.95rem;
   text-align: center;
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 10px;
 }
 
 .modal-bio {
-  margin-top: 10px;
-  font-style: italic;
-  color: #555;
   text-align: center;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.modal-interests {
+  margin-top: 20px;
 }
 
 .modal-interests h4 {
-  margin-top: 15px;
-  color: #ff4b7d;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .interests-list {
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
 }
 
 .interests-list span {
-  display: inline-block;
-  background: #fff0f3;
-  color: #ff4b7d;
-  border-radius: 15px;
-  padding: 5px 10px;
-  margin: 4px;
-  font-weight: 500;
-  font-size: 0.9rem;
+  background: #f3f3f3;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 14px;
+}
+
+.modal-photos {
+  margin-top: 25px;
 }
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin-top: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
 }
 
 .modal-photo {
   width: 100%;
-  height: 120px;
-  border-radius: 10px;
+  height: 180px;
   object-fit: cover;
+  border-radius: 10px;
 }
+
 
 /* === Animation === */
 @keyframes fadeIn {

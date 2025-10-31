@@ -3,6 +3,8 @@ import { getRecommendation, likeUser, skipUser } from "../services/homeService";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./Home.css";
+import { getProfileById } from "../services/userService";
+
 import {
   FaHeart,
   FaTimesCircle,
@@ -17,10 +19,10 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showDetail, setShowDetail] = useState(false);
+  const [detailUser, setDetailUser] = useState(null);
   const [total, setTotal] = useState(0);
   const [index, setIndex] = useState(0);
 
-  // ✅ State lưu bộ lọc
   const [filters, setFilters] = useState({
     gender: "",
     min_age: 18,
@@ -32,7 +34,6 @@ export default function Home() {
   const profile = JSON.parse(localStorage.getItem("user"));
   const userName = profile?.full_name?.split(" ")[0] || "bạn";
 
-  // ✅ Lấy gợi ý người dùng
   const fetchUser = async (appliedFilters = filters) => {
     try {
       setLoading(true);
@@ -53,7 +54,6 @@ export default function Home() {
     fetchUser();
   }, []);
 
-  // ✅ Thay đổi filter
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
@@ -75,13 +75,20 @@ export default function Home() {
     fetchUser(filters);
   };
 
+  const handleViewDetail = async () => {
+    try {
+      const data = await getProfileById(user.user_id);
+      setDetailUser(data);
+      setShowDetail(true);
+    } catch {
+      alert("Không thể tải hồ sơ chi tiết!");
+    }
+  };
+
   return (
     <>
       <Navbar />
-      
-
       <div className="home-page">
-        {/* 💖 Header lời chào có nền riêng */}
         <header className="hero-section">
           <div className="hero-content">
             <h1>
@@ -102,7 +109,6 @@ export default function Home() {
         </header>
 
         <div className="main-content">
-          {/* 🌸 Bộ lọc tìm kiếm */}
           <aside className="filter-panel">
             <h3>🔍 Bộ lọc tìm kiếm</h3>
 
@@ -128,7 +134,11 @@ export default function Home() {
             </div>
 
             <label>Giới tính</label>
-            <select name="gender" value={filters.gender} onChange={handleFilterChange}>
+            <select
+              name="gender"
+              value={filters.gender}
+              onChange={handleFilterChange}
+            >
               <option value="">Tất cả</option>
               <option value="male">Nam</option>
               <option value="female">Nữ</option>
@@ -157,7 +167,6 @@ export default function Home() {
             </button>
           </aside>
 
-          {/* 💞 Gợi ý người dùng */}
           <section className="recommend-section">
             <div className="recommend-header">
               <h3>Gợi ý cho bạn</h3>
@@ -197,10 +206,7 @@ export default function Home() {
                   <button className="btn-skip" onClick={handleSkip}>
                     <FaTimesCircle /> Bỏ qua
                   </button>
-                  <button
-                    className="btn-detail"
-                    onClick={() => setShowDetail(true)}
-                  >
+                  <button className="btn-detail" onClick={handleViewDetail}>
                     <FaInfoCircle /> Xem chi tiết
                   </button>
                   <button className="btn-like" onClick={handleLike}>
@@ -216,56 +222,61 @@ export default function Home() {
       </div>
 
       {/* 💌 Modal chi tiết */}
-      {showDetail && user && (
+      {showDetail && detailUser && (
         <div className="modal-overlay" onClick={() => setShowDetail(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={() => setShowDetail(false)}>
               ✕
             </button>
 
+            <h2 className="modal-title">Hồ sơ chi tiết</h2>
+
             <img
               src={`http://127.0.0.1:8000${
-                user.avatar_url || "/default-avatar.png"
+                detailUser.photos?.find((p) => p.is_avatar)?.url ||
+                "/default-avatar.png"
               }`}
               alt="avatar"
               className="modal-avatar"
             />
 
-            <h2>{user.full_name}</h2>
+            <h2>{detailUser.full_name}</h2>
             <p className="modal-sub">
-              <FaBirthdayCake /> {user.birthday?.slice(0, 10) || "Chưa rõ"}{" "}
-              &nbsp;•&nbsp;
-              <FaVenusMars /> {user.gender} &nbsp;•&nbsp;
-              <FaMapMarkerAlt /> {user.city || "Chưa cập nhật"}
+              <FaBirthdayCake />{" "}
+              {detailUser.birthday?.slice(0, 10) || "Chưa rõ"} &nbsp;•&nbsp;
+              <FaVenusMars /> {detailUser.gender || "Không rõ"} &nbsp;•&nbsp;
+              <FaMapMarkerAlt /> {detailUser.city || "Chưa cập nhật"}
             </p>
 
             <p className="modal-bio">
-              {user.bio || "Chưa có giới thiệu bản thân"}
+              {detailUser.bio || "Chưa có giới thiệu bản thân"}
             </p>
 
-            {user.interests?.length > 0 && (
+            {detailUser.interests?.length > 0 && (
               <div className="modal-interests">
                 <h4>Sở thích</h4>
                 <div className="interests-list">
-                  {user.interests.map((i, idx) => (
+                  {detailUser.interests.map((i, idx) => (
                     <span key={idx}>{i}</span>
                   ))}
                 </div>
               </div>
             )}
 
-            {user.photos?.length > 0 && (
+            {detailUser.photos?.length > 1 && (
               <div className="modal-photos">
                 <h4>Bộ sưu tập ảnh</h4>
                 <div className="photo-grid">
-                  {user.photos.map((p) => (
-                    <img
-                      key={p.photo_id}
-                      src={`http://127.0.0.1:8000${p.url}`}
-                      alt="photo"
-                      className="modal-photo"
-                    />
-                  ))}
+                  {detailUser.photos
+                    .filter((p) => !p.is_avatar)
+                    .map((p) => (
+                      <img
+                        key={p.photo_id}
+                        src={`http://127.0.0.1:8000${p.url}`}
+                        alt="photo"
+                        className="modal-photo"
+                      />
+                    ))}
                 </div>
               </div>
             )}
