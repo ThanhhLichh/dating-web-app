@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import defaultAvatar from "../assets/default-avatar.webp";
 import {
   getNotifications,
   likeBackUser,
@@ -15,7 +14,7 @@ export default function Notifications() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // ✅ Lấy danh sách thông báo khi vào trang
+  // ✅ Lấy danh sách thông báo
   useEffect(() => {
     const fetchNotif = async () => {
       try {
@@ -43,7 +42,7 @@ export default function Notifications() {
     }
   };
 
-  // ❌ Bỏ qua người gửi
+  // ❌ Bỏ qua
   const handleDismiss = async (notiId, senderId) => {
     try {
       await skipUser(senderId);
@@ -56,6 +55,11 @@ export default function Notifications() {
   // 👀 Xem trang cá nhân
   const handleViewProfile = (senderId) => {
     navigate(`/profile/${senderId}`);
+  };
+
+  // 💬 Chuyển đến trang chat (MỚI)
+  const handleGoToChat = () => {
+    navigate("/messages");
   };
 
   return (
@@ -93,41 +97,51 @@ export default function Notifications() {
                     🕒 {new Date(n.created_at).toLocaleString("vi-VN")}
                   </span>
 
-                  {/* Nếu là thông báo "LIKE" */}
+                  {/* 1. Thông báo LIKE */}
                   {n.type === "like" && (
                     <div className="notif-actions">
-                      <button
-                        className="btn-like"
-                        onClick={() => handleLikeBack(n.sender_id)}
-                      >
+                      <button className="btn-like" onClick={() => handleLikeBack(n.sender_id)}>
                         ❤️ Thích lại
                       </button>
-                      <button
-                        className="btn-view"
-                        onClick={() => handleViewProfile(n.sender_id)}
-                      >
+                      <button className="btn-view" onClick={() => handleViewProfile(n.sender_id)}>
                         👀 Xem
                       </button>
-                      <button
-                        className="btn-skip"
-                        onClick={() => handleDismiss(n.noti_id, n.sender_id)}
-                      >
+                      <button className="btn-skip" onClick={() => handleDismiss(n.noti_id, n.sender_id)}>
                         ❌ Bỏ qua
                       </button>
                     </div>
                   )}
 
-                  {/* Nếu là thông báo "MATCH" */}
+                  {/* 2. Thông báo MATCH */}
                   {n.type === "match" && (
                     <div className="notif-actions">
-                      <button
-                        className="btn-match"
-                        onClick={() => handleViewProfile(n.sender_id)}
-                      >
+                      <button className="btn-match" onClick={() => handleViewProfile(n.sender_id)}>
                         🎉 Xem người đã match
+                      </button>
+                      <button className="btn-reply" onClick={handleGoToChat}>
+                        💬 Nhắn tin ngay
                       </button>
                     </div>
                   )}
+
+                  {/* 3. Thông báo TIN NHẮN (MỚI) */}
+                  {n.type === "message" && (
+                    <div className="notif-actions">
+                      <button className="btn-reply" onClick={handleGoToChat}>
+                        💬 Trả lời ngay
+                      </button>
+                    </div>
+                  )}
+                  
+                  {/* 4. Thông báo CUỘC GỌI */}
+                  {n.type === "call" && (
+                    <div className="notif-actions">
+                      <button className="btn-view" onClick={handleGoToChat}>
+                        📞 Gọi lại
+                      </button>
+                    </div>
+                  )}
+
                 </div>
               </div>
             ))}

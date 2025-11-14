@@ -1,19 +1,30 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine
-from routers import user_router, photo_router, home_router, notification_router, match_router, message_router
+# Import các router
+from routers import (
+    user_router, 
+    photo_router, 
+    home_router, 
+    notification_router, 
+    match_router, 
+    message_router,
+    
+)
 from auth import auth_router
 from fastapi.staticfiles import StaticFiles
-from websocket import message_ws
+from websocket import message_ws, call_ws
+
 app = FastAPI(title="LoveConnect API ❤️")
 
-# ✅ Thêm CORS middleware (rất quan trọng)
+# ✅ CẤU HÌNH CORS (SỬA LẠI ĐOẠN NÀY)
+# Cho phép tất cả ["*"] để tránh lỗi 127.0.0.1 vs localhost
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # domain của frontend React
+    allow_origins=["*"],  # 👈 ĐỔI THÀNH "*" ĐỂ CHẤP NHẬN TẤT CẢ
     allow_credentials=True,
-    allow_methods=["*"],  # cho phép tất cả phương thức: GET, POST, PUT, DELETE...
-    allow_headers=["*"],  # cho phép tất cả headers (Authorization, Content-Type, ...)
+    allow_methods=["*"],  # Cho phép tất cả các phương thức (GET, POST, PUT, DELETE, OPTIONS)
+    allow_headers=["*"],  # Cho phép tất cả headers
 )
 
 # ✅ Khởi tạo database
@@ -27,8 +38,13 @@ app.include_router(home_router.router)
 app.include_router(notification_router.router)
 app.include_router(match_router.router)
 app.include_router(message_router.router)
-app.include_router(message_ws.router)
 
+
+# ✅ WebSocket Routers
+app.include_router(message_ws.router)
+app.include_router(call_ws.router)
+
+# ✅ Mount thư mục uploads để xem được ảnh
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # ✅ Route kiểm tra

@@ -1,0 +1,251 @@
+/* 📞 CallModal.css */
+
+.call-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+}
+
+.call-modal {
+  width: 90%;
+  max-width: 600px;
+  min-height: 500px;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden; /* Tránh tràn nội dung */
+}
+
+/* === Cuộc gọi đến === */
+.incoming-call,
+.calling-out {
+  text-align: center;
+  color: white;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.caller-avatar {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #e91e63, #ff5e9c);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(233, 30, 99, 0.5);
+}
+
+.phone-icon {
+  font-size: 50px;
+  color: white;
+}
+
+.pulse {
+  animation: pulse-ring 1.5s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.incoming-call h2,
+.calling-out h2 {
+  font-size: 28px;
+  margin: 10px 0;
+  color: white;
+}
+
+.incoming-call p,
+.calling-out p {
+  font-size: 16px;
+  color: #ddd;
+  margin-bottom: 30px;
+}
+
+.call-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.btn-accept,
+.btn-reject,
+.btn-end {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-accept {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+}
+.btn-accept:hover { transform: scale(1.05); }
+
+.btn-reject, .btn-end {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+}
+.btn-reject:hover, .btn-end:hover { transform: scale(1.05); }
+
+/* === Cuộc gọi đang hoạt động (FIX LỖI UI VỠ) === */
+.active-call {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* ✅ Đẩy video và nút ra xa nhau */
+  gap: 10px;
+}
+
+/* Video người đối phương (fullscreen) */
+.remote-video-container {
+  flex: 1;
+  width: 100%;
+  background: #000;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.audio-call-avatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.audio-call-avatar .phone-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+/* Video của mình (góc phải trên) */
+.local-video-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 120px;
+  height: 160px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  background: #333;
+}
+
+.local-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Thông tin cuộc gọi */
+.call-info {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  z-index: 5;
+}
+
+.call-info h3 { margin: 0; font-size: 18px; }
+.call-info p { margin: 5px 0 0; font-size: 14px; color: #ddd; }
+
+/* Nút điều khiển */
+.call-controls {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  padding-bottom: 10px;
+  width: 100%;
+}
+
+.btn-control {
+  width: 55px;
+  height: 55px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-control:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.btn-control.muted {
+  background: rgba(231, 76, 60, 0.8);
+}
+
+.btn-end {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  padding: 0;
+  transform: rotate(135deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-end:hover {
+  transform: rotate(135deg) scale(1.1);
+}
