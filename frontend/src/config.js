@@ -1,2 +1,2 @@
-export const API_URL = "https://h5zc5533-8000.asse.devtunnels.ms";
-export const WS_URL  = "wss://h5zc5533-8000.asse.devtunnels.ms";
+export const API_URL = "http://localhost:8000";
+export const WS_URL  = "ws://localhost:8000";
