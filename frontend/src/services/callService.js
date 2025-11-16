@@ -1,4 +1,6 @@
 import api from "./api";
+import { WS_URL } from "../config";
+
 
 class CallService {
   constructor() {
@@ -22,7 +24,7 @@ class CallService {
   connect(matchId, token) {
     return new Promise((resolve, reject) => {
       if (this.ws) this.ws.close();
-      this.ws = new WebSocket(`ws://127.0.0.1:8000/ws/call/${matchId}?token=${token}`);
+      this.ws = new WebSocket(`${WS_URL}/ws/call/${matchId}?token=${token}`);
       this.ws.onopen = () => { console.log("📞 Call WebSocket connected"); resolve(); };
       this.ws.onerror = (err) => { console.error("❌ Call WS error:", err); reject(err); };
       this.ws.onclose = () => console.log("📵 Call WebSocket closed");

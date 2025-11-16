@@ -25,6 +25,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],  # Cho phép tất cả các phương thức (GET, POST, PUT, DELETE, OPTIONS)
     allow_headers=["*"],  # Cho phép tất cả headers
+    expose_headers=["*"],      
 )
 
 # ✅ Khởi tạo database
