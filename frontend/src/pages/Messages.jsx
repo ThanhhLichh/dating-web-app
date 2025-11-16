@@ -12,6 +12,7 @@ import {
   FaPaperPlane, FaSearch, FaComments, FaHeart, FaSmile, 
   FaPhone, FaVideo, FaPhoneSlash, FaPaperclip, FaFileAlt 
 } from "react-icons/fa";
+import { API_URL, WS_URL } from "../config";
 
 export default function Messages() {
   const [matches, setMatches] = useState([]);
@@ -54,7 +55,7 @@ export default function Messages() {
   useEffect(() => {
     if (!selectedMatch) return;
     const token = localStorage.getItem("token");
-    const ws = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${selectedMatch.match_id}?token=${token}`);
+    const ws = new WebSocket(`${WS_URL}/ws/chat/${selectedMatch.match_id}?token=${token}`);
 
     ws.onopen = () => console.log("🟢 WS connected");
     ws.onmessage = (event) => {
@@ -228,7 +229,7 @@ export default function Messages() {
             <div className="match-list">
               {matches.map((m) => (
                 <div key={m.match_id} className={`match-item ${selectedMatch?.match_id === m.match_id ? "active" : ""}`} onClick={() => handleSelectMatch(m)}>
-                  <img src={`http://127.0.0.1:8000${m.avatar_url || defaultAvatar}`} alt={m.full_name} />
+                  <img src={`${API_URL}${m.avatar_url || defaultAvatar}`} alt={m.full_name} />
                   <div className="match-info">
                     <h4>{m.full_name}</h4>
                     <span className="last-msg">{m.last_message ? (m.last_message.includes("/uploads/") ? "📎 Đã gửi tệp tin" : m.last_message) : "Chưa có tin nhắn"}</span>
@@ -244,7 +245,7 @@ export default function Messages() {
             ) : (
               <>
                 <div className="chat-header">
-                  <img src={`http://127.0.0.1:8000${selectedMatch.avatar_url || defaultAvatar}`} alt="avatar" />
+                  <img src={`${API_URL}${selectedMatch.avatar_url || defaultAvatar}`} alt="avatar" />
                   <div className="chat-info"><h3>{selectedMatch.full_name}</h3><span>Đang hoạt động</span></div>
                   <div className="call-buttons">
                     <button className="btn-call-voice" onClick={() => handleStartCall("voice")}><FaPhone /></button>
@@ -288,11 +289,11 @@ export default function Messages() {
                     return (
                       <div key={i} className={`chat-bubble ${msg.is_me ? "me" : "other"}`}>
                         {msg.type === 'image' ? (
-                            <img src={`http://127.0.0.1:8000${msg.content}`} alt="img" className="chat-image" onClick={() => window.open(`http://127.0.0.1:8000${msg.content}`, '_blank')} />
+                            <img src={`${API_URL}${msg.content}`} alt="img" className="chat-image" onClick={() => window.open(`${API_URL}${msg.content}`, '_blank')} />
                         ) : msg.type === 'video' ? (
-                            <video controls className="chat-video"><source src={`http://127.0.0.1:8000${msg.content}`} /></video>
+                            <video controls className="chat-video"><source src={`${API_URL}${msg.content}`} /></video>
                         ) : msg.type === 'file' ? (
-                            <a href={`http://127.0.0.1:8000${msg.content}`} target="_blank" rel="noreferrer" className="chat-file-link"><FaFileAlt /> {msg.content.split('/').pop()}</a>
+                            <a href={`${API_URL}${msg.content}`} target="_blank" rel="noreferrer" className="chat-file-link"><FaFileAlt /> {msg.content.split('/').pop()}</a>
                         ) : (
                             <p>{msg.content}</p>
                         )}

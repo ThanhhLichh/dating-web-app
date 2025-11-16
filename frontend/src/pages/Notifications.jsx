@@ -8,6 +8,7 @@ import {
   skipUser,
 } from "../services/notificationService";
 import "./Notifications.css";
+import { API_URL } from "../config";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -81,7 +82,7 @@ export default function Notifications() {
                 className={`notif-card ${n.is_read ? "read" : "unread"}`}
               >
                 <img
-                  src={`http://127.0.0.1:8000${
+                  src={`${API_URL}${
                     n.sender_avatar || "/default-avatar.png"
                   }`}
                   alt="sender"

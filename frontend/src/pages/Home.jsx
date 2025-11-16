@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./Home.css";
 import { getProfileById } from "../services/userService";
+import { API_URL } from "../config";
 
 import {
   FaHeart,
@@ -182,7 +183,7 @@ export default function Home() {
             ) : user ? (
               <div className="user-card">
                 <img
-                  src={`http://127.0.0.1:8000${
+                  src={`${API_URL}${
                     user.avatar_url || "/default-avatar.png"
                   }`}
                   alt="avatar"
@@ -232,7 +233,7 @@ export default function Home() {
             <h2 className="modal-title">Hồ sơ chi tiết</h2>
 
             <img
-              src={`http://127.0.0.1:8000${
+              src={`${API_URL}${
                 detailUser.photos?.find((p) => p.is_avatar)?.url ||
                 "/default-avatar.png"
               }`}
@@ -272,7 +273,7 @@ export default function Home() {
                     .map((p) => (
                       <img
                         key={p.photo_id}
-                        src={`http://127.0.0.1:8000${p.url}`}
+                        src={`${API_URL}${p.url}`}
                         alt="photo"
                         className="modal-photo"
                       />

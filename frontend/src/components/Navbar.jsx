@@ -7,6 +7,7 @@ import { FaHome, FaUser, FaComments, FaBell } from "react-icons/fa";
 import api from "../services/api";
 import { getNotifications } from "../services/notificationService";
 import { logout,  } from "../services/authService"; // ✅ import logout mới
+import { API_URL } from "../config";
 
 export default function Navbar() {
   const [user, setUser] = useState({ full_name: "Người dùng", avatar: "" });
@@ -29,7 +30,7 @@ export default function Navbar() {
         });
         const photo = res.data.photos?.find((p) => p.is_avatar);
         const avatar = photo
-          ? `http://127.0.0.1:8000${photo.url}`
+          ? `${API_URL}${photo.url}`
           : defaultAvatar;
 
         setUser({ full_name: res.data.full_name, avatar });
@@ -144,7 +145,7 @@ export default function Navbar() {
             notifications.map((n) => (
               <div key={n.noti_id} className="notif-item">
                 <img
-                  src={`http://127.0.0.1:8000${
+                  src={`${API_URL}${
                     n.sender_avatar || "/default-avatar.png"
                   }`}
                   alt="sender"

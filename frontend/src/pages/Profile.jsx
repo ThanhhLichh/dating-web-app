@@ -8,6 +8,7 @@ import {
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./Profile.css";
+import { API_URL } from "../config";
 
 // 🎨 Icon imports
 import { FiEdit2, FiHeart, FiImage, FiPlusCircle } from "react-icons/fi";
@@ -67,7 +68,7 @@ export default function Profile() {
         <div className="profile-header">
           <div className="avatar-wrapper">
             <img
-              src={`http://127.0.0.1:8000${
+              src={`${API_URL}${
                 profile.photos.find((p) => p.is_avatar)?.url ||
                 "/default-avatar.png"
               }`}
@@ -91,7 +92,7 @@ export default function Profile() {
                     formData.append("file", file);
 
                     try {
-                      await fetch("http://127.0.0.1:8000/users/me/avatar", {
+                      await fetch("${API_URL}/users/me/avatar", {
                         method: "POST",
                         headers: {
                           Authorization: `Bearer ${localStorage.getItem(
@@ -319,7 +320,7 @@ export default function Profile() {
                   formData.append("file", file);
 
                   try {
-                    await fetch("http://127.0.0.1:8000/photos/me", {
+                    await fetch("${API_URL}/photos/me", {
                       method: "POST",
                       headers: {
                         Authorization: `Bearer ${localStorage.getItem(
@@ -343,7 +344,7 @@ export default function Profile() {
               profile.photos.map((p) => (
                 <div key={p.photo_id} className="photo-item">
                   <img
-                    src={`http://127.0.0.1:8000${p.url}`}
+                    src={`${API_URL}${p.url}`}
                     alt="photo"
                     className="photo"
                   />
@@ -353,7 +354,7 @@ export default function Profile() {
                       <button
                         onClick={async () => {
                           await fetch(
-                            `http://127.0.0.1:8000/photos/me/${p.photo_id}/set_avatar`,
+                            `${API_URL}/photos/me/${p.photo_id}/set_avatar`,
                             {
                               method: "PUT",
                               headers: {
@@ -374,7 +375,7 @@ export default function Profile() {
                       onClick={async () => {
                         if (window.confirm("Xóa ảnh này?")) {
                           await fetch(
-                            `http://127.0.0.1:8000/photos/me/${p.photo_id}`,
+                            `${API_URL}/photos/me/${p.photo_id}`,
                             {
                               method: "DELETE",
                               headers: {
