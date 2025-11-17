@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CallModal from "../components/CallModal";
 import { getMatches } from "../services/matchService";
-import { getMessages, sendMessage, uploadFile } from "../services/messageService";
+import { getMessages, sendMessage, uploadFile } from "../services/messageService"; 
 import callService from "../services/callService";
 import "./Messages.css";
 import defaultAvatar from "../assets/default-avatar.webp";
@@ -12,7 +12,8 @@ import {
   FaPaperPlane, FaSearch, FaComments, FaHeart, FaSmile, 
   FaPhone, FaVideo, FaPhoneSlash, FaPaperclip, FaFileAlt 
 } from "react-icons/fa";
-import { API_URL, WS_URL } from "../config";
+// Import biến môi trường (config.js)
+import { API_URL, WS_URL } from "../config"; 
 
 export default function Messages() {
   const [matches, setMatches] = useState([]);
@@ -22,9 +23,9 @@ export default function Messages() {
   const [showEmoji, setShowEmoji] = useState(false);
   const [socket, setSocket] = useState(null);
   const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef(null); 
 
-  // Call states
+  // 📞 Call states
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   const [callType, setCallType] = useState("voice"); 
   const [isIncomingCall, setIsIncomingCall] = useState(false);
@@ -33,55 +34,77 @@ export default function Messages() {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
 
+  // 🎵 [MỚI] Audio Refs (Đảm bảo bạn có file này trong /public)
+  const outgoingRingRef = useRef(new Audio('/outgoing-ring.mp3'));
+  const incomingRingRef = useRef(new Audio('/incoming-ring.mp3'));
+
+  // 🎵 [MỚI] Thiết lập lặp lại cho chuông
+  useEffect(() => {
+    const outRing = outgoingRingRef.current;
+    const inRing = incomingRingRef.current;
+    outRing.loop = true;
+    inRing.loop = true;
+    // Cleanup khi component unmount
+    return () => { 
+      outRing.pause(); 
+      inRing.pause(); 
+    };
+  }, []);
+
   const toggleEmoji = () => setShowEmoji((prev) => !prev);
 
-  // ✅ Load matches
+  // --- CÁC HÀM USEEFFECT (Đã sửa lại cú pháp) ---
+
+  // ✅ 1. Lấy danh sách match
   useEffect(() => {
     const fetchMatches = async () => {
       try {
         const data = await getMatches();
         setMatches(data);
-      } catch (err) { console.error(err); }
+      } catch (err) { 
+        console.error("❌ Lỗi tải match:", err); 
+      }
     };
     fetchMatches();
   }, []);
 
-  // ✅ Auto scroll
+  // ✅ 2. Tự động cuộn
   useEffect(() => {
-    messagesEndRef.current?.parentElement.scrollTo({ top: messagesEndRef.current?.parentElement.scrollHeight, behavior: "smooth" });
+    const chatBox = messagesEndRef.current?.parentElement;
+    if (chatBox) chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  // ✅ WebSocket Chat
+  // ✅ 3. Kết nối WebSocket Chat
   useEffect(() => {
     if (!selectedMatch) return;
     const token = localStorage.getItem("token");
+    
+    // Dùng biến WS_URL
     const ws = new WebSocket(`${WS_URL}/ws/chat/${selectedMatch.match_id}?token=${token}`);
-
-    ws.onopen = () => console.log("🟢 WS connected");
+    
+    ws.onopen = () => console.log("🟢 WebSocket Chat connected");
     ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
         setMessages((prev) => {
-          const isDuplicate = prev.some((m) => 
-              m.content === msg.content && m.sender_id === msg.sender_id && 
-              Math.abs(new Date(m.created_at) - new Date(msg.created_at)) < 2000
-          );
+          const isDuplicate = prev.some((m) => m.content === msg.content && m.sender_id === msg.sender_id && Math.abs(new Date(m.created_at) - new Date(msg.created_at)) < 2000);
           return isDuplicate ? prev : [...prev, msg];
         });
-      } catch (err) { console.error(err); }
+      } catch (err) { console.error("Lỗi parse message:", err); }
     };
     setSocket(ws);
     return () => ws.close();
   }, [selectedMatch]);
 
-  // ✅ WebSocket Call
+  // ✅ 4. Kết nối WebSocket Call
   useEffect(() => {
     if (!selectedMatch) return;
     const token = localStorage.getItem("token");
     
     const connectCallWS = async () => {
       try {
-        await callService.connect(selectedMatch.match_id, token);
+        // Dùng biến WS_URL
+        await callService.connect(selectedMatch.match_id, token, WS_URL); 
         callService.onMessage((message) => {
           if (message.type === "incoming-call") {
             setIncomingCallData(message);
@@ -90,37 +113,42 @@ export default function Messages() {
             setIsCallModalOpen(true);
             callService.targetUserId = message.caller_id;
 
+            // 🎵 BẬT CHUÔNG GỌI ĐẾN (Đã bỏ Mute)
+            incomingRingRef.current.muted = false; 
+            incomingRingRef.current.play().catch(e => console.warn("Lỗi phát chuông (đã mồi):", e));
+
           } else if (message.type === "call-answered") {
             setIsIncomingCall(false);
             setIsCallAccepted(true); 
-
+            stopAllRinging();
           } else if (message.type === "call-rejected") {
             alert("❌ Cuộc gọi bị từ chối");
             handleRemoteCallEnded("📞 Cuộc gọi bị từ chối");
-
           } else if (message.type === "call-ended") {
-            // 👇 Đọc type từ server để hiện đúng icon
             const type = message.call_type || "voice";
             const icon = type === 'video' ? '🎥' : '📞';
             const text = type === 'video' ? 'video' : 'thoại';
             handleRemoteCallEnded(`${icon} Cuộc gọi ${text} đã kết thúc`);
           }
         });
-      } catch (err) { console.error(err); }
+      } catch (err) { console.error("❌ Lỗi kết nối call WebSocket:", err); }
     };
     connectCallWS();
     return () => { if (callService.ws) callService.cleanup(); };
   }, [selectedMatch]);
 
-  // --- HELPER FUNCTIONS ---
+  // --- CÁC HÀM XỬ LÝ ---
+
+  // 🎵 [MỚI] Hàm dừng mọi tiếng chuông
+  const stopAllRinging = () => {
+    outgoingRingRef.current.pause();
+    outgoingRingRef.current.currentTime = 0;
+    incomingRingRef.current.pause();
+    incomingRingRef.current.currentTime = 0;
+  };
 
   const addSystemMessage = (content) => {
-    const fakeLog = {
-      type: 'call_log',
-      content: content,
-      created_at: new Date().toISOString(),
-      sender_id: 9999, is_me: true
-    };
+    const fakeLog = { type: 'call_log', content: content, created_at: new Date().toISOString(), sender_id: 9999, is_me: true };
     setMessages(prev => [...prev, fakeLog]);
   };
 
@@ -131,42 +159,53 @@ export default function Messages() {
     setIncomingCallData(null);
     setIsIncomingCall(false);
     setIsCallAccepted(false);
+    stopAllRinging(); // 🎵 Tắt chuông khi reset
   };
 
-  // 👇 SỬA: Gửi callType khi tắt
   const handleEndCall = () => {
     callService.endCall(callType); 
-    resetCallState();
-    
-    // Tạo log hiển thị đúng
+    resetCallState(); // Đã bao gồm stopAllRinging()
     const icon = callType === 'video' ? '🎥' : '📞';
     const text = callType === 'video' ? 'video' : 'thoại';
     addSystemMessage(`${icon} Cuộc gọi ${text} đã kết thúc`);
   };
 
-  const handleRemoteCallEnded = (msgContent) => {
+  const handleRemoteCallEnded = (msgContent = '🎥 Cuộc gọi đã kết thúc') => {
     if (callService.ws) callService.cleanup();
-    resetCallState();
+    resetCallState(); // Đã bao gồm stopAllRinging()
     addSystemMessage(msgContent);
   };
 
+  // ✅ [SỬA] Thêm logic "mồi" âm thanh
   const handleSelectMatch = async (m) => {
     setSelectedMatch(m);
+
+    // 👇 [MỒI ÂM THANH] Chạy ở chế độ tắt tiếng khi user click lần đầu
+    try {
+      outgoingRingRef.current.muted = true;
+      outgoingRingRef.current.play().catch(() => {});
+      incomingRingRef.current.muted = true;
+      incomingRingRef.current.play().catch(() => {});
+    } catch (e) {
+      console.warn("Lỗi mồi âm thanh:", e);
+    }
+    // 👆 HẾT PHẦN MỒI
+
     try {
       const data = await getMessages(m.match_id);
       setMessages(data);
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("❌ Lỗi tải tin nhắn:", err); }
   };
 
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedMatch) return;
-    const message = { content: newMessage, type: 'text' };
+    const message = { content: newMessage, type: 'text' }; 
     try {
       await sendMessage(selectedMatch.match_id, message);
       socket?.send(JSON.stringify(message));
       setNewMessage("");
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("❌ Lỗi gửi tin nhắn:", err); }
   };
 
   const handleFileSelect = async (e) => {
@@ -181,22 +220,44 @@ export default function Messages() {
     finally { e.target.value = null; }
   };
 
+  // 📞 [SỬA] Xử lý cuộc gọi
   const handleStartCall = async (type) => {
     if (!selectedMatch) return;
-    resetCallState();
+    resetCallState(); 
     setCallType(type);
     setIsCallModalOpen(true);
+
     try {
+      // 🎵 Bật chuông chờ (bỏ mute)
+      outgoingRingRef.current.muted = false; 
+      outgoingRingRef.current.play().catch(e => console.warn("Lỗi phát chuông:", e));
+
       const targetUserId = selectedMatch.partner_id;
-      if (!targetUserId) { alert("Lỗi: Không xác định người nhận"); setIsCallModalOpen(false); return; }
+      if (!targetUserId) { 
+        alert("Lỗi: Không xác định người nhận"); 
+        setIsCallModalOpen(false); 
+        stopAllRinging(); 
+        return; 
+      }
       callService.targetUserId = targetUserId;
-      const stream = await callService.startCall(targetUserId, type, (remoteStr) => setRemoteStream(remoteStr));
-      setLocalStream(stream);
-    } catch (err) { alert("Lỗi thiết bị hoặc kết nối."); setIsCallModalOpen(false); }
+      
+      const stream = await callService.startCall(targetUserId, type, (remoteStr) => {
+        setRemoteStream(remoteStr);
+      });
+      
+      setLocalStream(stream); // Fix lỗi màn hình nhỏ
+
+    } catch (err) {
+      console.error("❌ Lỗi bắt đầu gọi:", err);
+      alert("Lỗi thiết bị hoặc kết nối.");
+      setIsCallModalOpen(false);
+      stopAllRinging(); 
+    }
   };
 
   const handleAcceptCall = async () => {
     if (!incomingCallData) return;
+    stopAllRinging(); // Tắt chuông khi chấp nhận
     try {
       callService.targetUserId = incomingCallData.caller_id;
       setIsCallAccepted(true);
@@ -206,7 +267,11 @@ export default function Messages() {
       );
       setLocalStream(stream);
       setIsIncomingCall(false);
-    } catch (err) { alert("Không thể trả lời."); handleEndCall(); }
+    } catch (err) {
+      console.error("❌ Lỗi trả lời:", err);
+      alert("Không thể trả lời cuộc gọi.");
+      handleEndCall();
+    }
   };
 
   const handleRejectCall = () => {
@@ -214,10 +279,11 @@ export default function Messages() {
       callService.targetUserId = incomingCallData.caller_id;
       callService.rejectCall(incomingCallData.call_id);
     }
-    resetCallState();
+    resetCallState(); 
     addSystemMessage('📞 Bạn đã từ chối cuộc gọi');
   };
 
+  // ... (Phần return JSX giữ nguyên y hệt) ...
   return (
     <>
       <Navbar />
@@ -232,7 +298,9 @@ export default function Messages() {
                   <img src={`${API_URL}${m.avatar_url || defaultAvatar}`} alt={m.full_name} />
                   <div className="match-info">
                     <h4>{m.full_name}</h4>
-                    <span className="last-msg">{m.last_message ? (m.last_message.includes("/uploads/") ? "📎 Đã gửi tệp tin" : m.last_message) : "Chưa có tin nhắn"}</span>
+                    <span className="last-msg">
+                       {m.last_message ? (m.last_message.includes("/uploads/") ? "📎 Đã gửi tệp tin" : m.last_message) : "Chưa có tin nhắn"}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -248,34 +316,21 @@ export default function Messages() {
                   <img src={`${API_URL}${selectedMatch.avatar_url || defaultAvatar}`} alt="avatar" />
                   <div className="chat-info"><h3>{selectedMatch.full_name}</h3><span>Đang hoạt động</span></div>
                   <div className="call-buttons">
-                    <button className="btn-call-voice" onClick={() => handleStartCall("voice")}><FaPhone /></button>
-                    <button className="btn-call-video" onClick={() => handleStartCall("video")}><FaVideo /></button>
+                    <button className="btn-call-voice" onClick={() => handleStartCall("voice")} title="Gọi thoại"><FaPhone /></button>
+                    <button className="btn-call-video" onClick={() => handleStartCall("video")} title="Gọi video"><FaVideo /></button>
                   </div>
                 </div>
 
                 <div className="chat-box">
                   {messages.map((msg, i) => {
-                    // 👇 RENDER LOG: Chọn Icon thông minh dựa trên nội dung
                     if (msg.type === "call_log") {
-                      let Icon = FaPhone;
-                      let iconColor = '#2ecc71'; // Xanh lá
-
-                      // Nếu nội dung có chữ "video" -> Hiện icon Camera
-                      if (msg.content.toLowerCase().includes("video")) {
-                          Icon = FaVideo;
-                      }
-                      // Nếu bị nhỡ hoặc từ chối -> Hiện icon Đỏ
-                      if (msg.content.includes("từ chối") || msg.content.includes("nhỡ")) {
-                          Icon = FaPhoneSlash;
-                          iconColor = '#e74c3c';
-                      }
-
+                      let Icon = FaPhone; let iconColor = '#2ecc71'; 
+                      if (msg.content.toLowerCase().includes("video")) Icon = FaVideo;
+                      if (msg.content.includes("từ chối") || msg.content.includes("nhỡ")) { Icon = FaPhoneSlash; iconColor = '#e74c3c'; }
                       return (
                         <div key={i} className="system-message">
                           <div className="call-log-bubble">
-                            <div className="icon-box">
-                              <Icon style={{color: iconColor}} />
-                            </div>
+                            <div className="icon-box"><Icon style={{color: iconColor}} /></div>
                             <div className="content-box">
                               <span className="call-title">{msg.content}</span>
                               <span className="call-time">{new Date(msg.created_at).toLocaleTimeString("vi-VN", {hour: "2-digit", minute: "2-digit"})}</span>
@@ -284,8 +339,6 @@ export default function Messages() {
                         </div>
                       );
                     }
-
-                    // RENDER TIN NHẮN THƯỜNG
                     return (
                       <div key={i} className={`chat-bubble ${msg.is_me ? "me" : "other"}`}>
                         {msg.type === 'image' ? (
@@ -308,8 +361,8 @@ export default function Messages() {
                   <input type="file" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileSelect} />
                   <button type="button" className="emoji-btn" onClick={() => fileInputRef.current.click()} title="Gửi ảnh/file"><FaPaperclip /></button>
                   <input type="text" value={newMessage} placeholder="Nhập tin nhắn..." onChange={(e) => setNewMessage(e.target.value)} />
-                  <button type="button" className="emoji-btn" onClick={toggleEmoji}><FaSmile /></button>
-                  <button type="submit"><FaPaperPlane /></button>
+                  <button type="button" className="emoji-btn" onClick={toggleEmoji} title="Biểu cảm"><FaSmile /></button>
+                  <button type="submit" title="Gửi"><FaPaperPlane /></button>
                   {showEmoji && <div className="emoji-picker"><EmojiPicker onEmojiClick={(e) => setNewMessage((prev) => prev + e.emoji)} /></div>}
                 </form>
               </>
@@ -318,7 +371,20 @@ export default function Messages() {
         </div>
       </div>
 
-      <CallModal isOpen={isCallModalOpen} callType={callType} isIncoming={isIncomingCall} isCallAccepted={isCallAccepted} callerName={isIncomingCall ? incomingCallData?.caller_name : selectedMatch?.full_name} localStream={localStream} remoteStream={remoteStream} onAccept={handleAcceptCall} onReject={handleRejectCall} onEnd={handleEndCall} onToggleMic={() => callService.toggleMic()} onToggleCamera={() => callService.toggleCamera()} />
+      <CallModal 
+        isOpen={isCallModalOpen} 
+        callType={callType} 
+        isIncoming={isIncomingCall} 
+        isCallAccepted={isCallAccepted} 
+        callerName={isIncomingCall ? incomingCallData?.caller_name : selectedMatch?.full_name} 
+        localStream={localStream} 
+        remoteStream={remoteStream} 
+        onAccept={handleAcceptCall} 
+        onReject={handleRejectCall} 
+        onEnd={handleEndCall} 
+        onToggleMic={() => callService.toggleMic()} 
+        onToggleCamera={() => callService.toggleCamera()} 
+      />
       <Footer />
     </>
   );
