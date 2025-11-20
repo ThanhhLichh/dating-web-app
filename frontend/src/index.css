@@ -7,12 +7,14 @@
   font-family: "Poppins", sans-serif;
 }
 
+/* FORM BOX RESPONSIVE */
 .form-box {
   background: #fff;
   color: #333;
   padding: 40px 50px;
   border-radius: 20px;
-  width: 400px;
+  width: 90%;
+  max-width: 400px; /* quan trọng: giữ form không quá to */
   text-align: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
@@ -49,4 +51,21 @@
   color: #ff416c;
   cursor: pointer;
   font-weight: 600;
+}
+
+/* MOBILE OPTIMIZATION */
+@media (max-width: 480px) {
+  .form-box {
+    padding: 20px 25px; /* thu nhỏ padding cho vừa màn hình */
+    border-radius: 15px;
+  }
+
+  .form-box input,
+  .form-box select {
+    padding: 8px;
+  }
+
+  .form-box button {
+    padding: 9px;
+  }
 }

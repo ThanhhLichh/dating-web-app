@@ -41,7 +41,7 @@
   display: flex;
   align-items: center;
   gap: 35px;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .navbar-center a {
@@ -52,6 +52,7 @@
   font-weight: 500;
   text-decoration: none;
   transition: color 0.25s ease, transform 0.2s ease;
+  white-space: nowrap;
 }
 
 .navbar-center a:hover,
@@ -111,7 +112,8 @@
   cursor: pointer;
 }
 
-.avatar {
+.avatar,
+.nav-avatar {
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -121,7 +123,8 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.avatar:hover {
+.avatar:hover,
+.nav-avatar:hover {
   transform: scale(1.05);
   box-shadow: 0 0 0 4px rgba(255, 75, 43, 0.25);
 }
@@ -166,37 +169,7 @@
   color: #ff4b2b;
 }
 
-/* === Responsive === */
-@media (max-width: 800px) {
-  .navbar {
-    padding: 0 25px;
-  }
-
-  .navbar-center {
-    gap: 20px;
-  }
-
-  .greeting {
-    display: none;
-  }
-}
-
-/* Avatar nhỏ riêng cho navbar */
-.nav-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 75, 43, 0.25);
-  box-shadow: 0 0 0 3px rgba(255, 75, 43, 0.1);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.nav-avatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 0 4px rgba(255, 75, 43, 0.25);
-}
-
+/* === Notification Dropdown === */
 .notif-dropdown {
   position: absolute;
   right: 80px;
@@ -207,6 +180,8 @@
   box-shadow: 0 6px 20px rgba(255, 90, 130, 0.25);
   padding: 12px;
   z-index: 999;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .notif-item {
@@ -222,6 +197,7 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .notif-content {
@@ -249,4 +225,129 @@
 .match-text {
   font-weight: bold;
   color: #ff4b7d;
+}
+
+/* ============================================ */
+/* === RESPONSIVE MOBILE === */
+/* ============================================ */
+
+/* Tablet nhỏ và điện thoại lớn */
+@media (max-width: 800px) {
+  .navbar {
+    padding: 0 20px;
+    height: 60px;
+  }
+
+  .brand-name {
+    font-size: 18px;
+  }
+
+  .navbar-center {
+    gap: 15px;
+  }
+
+  .navbar-center a {
+    font-size: 14px;
+    gap: 5px;
+  }
+
+  .greeting {
+    display: none;
+  }
+
+  .notif-dropdown {
+    right: 10px;
+    width: 280px;
+  }
+}
+
+/* Điện thoại (portrait) */
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0 15px;
+    height: 60px;
+  }
+
+  .brand img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  /* Ẩn text của menu, chỉ giữ icon */
+  .navbar-center {
+    gap: 10px;
+  }
+
+  .navbar-center a {
+    font-size: 0;
+    padding: 8px;
+  }
+
+  .navbar-center a svg {
+    font-size: 18px;
+    margin: 0;
+  }
+
+  /* Avatar nhỏ lại */
+  .avatar,
+  .nav-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .navbar-right {
+    gap: 12px;
+  }
+
+  .notif-icon {
+    font-size: 16px;
+  }
+
+  /* Notification dropdown full width mobile */
+  .notif-dropdown {
+    position: fixed;
+    right: 0;
+    left: 0;
+    top: 60px;
+    width: 100%;
+    border-radius: 0;
+    max-height: 70vh;
+  }
+
+  .dropdown-menu {
+    min-width: 140px;
+  }
+}
+
+/* Điện thoại siêu nhỏ */
+@media (max-width: 380px) {
+  .navbar {
+    padding: 0 10px;
+  }
+
+  .navbar-center {
+    gap: 5px;
+  }
+
+  .navbar-center a {
+    padding: 6px;
+  }
+
+  .navbar-center a svg {
+    font-size: 16px;
+  }
+
+  .navbar-right {
+    gap: 8px;
+  }
+
+  .avatar,
+  .nav-avatar {
+    width: 28px;
+    height: 28px;
+  }
 }
