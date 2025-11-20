@@ -42,8 +42,8 @@ export default function Profile() {
     try {
       await updateProfile(form);
       if (newAvatar) await uploadAvatar(newAvatar);
-      await new Promise((r) => setTimeout(r, 100)); // đợi state cập nhật
-      await updateInterests([...interests]); // gửi bản copy mới nhất
+      await new Promise((r) => setTimeout(r, 100));
+      await updateInterests([...interests]);
 
       alert("✅ Cập nhật hồ sơ thành công!");
       const updated = await getProfile();
@@ -92,7 +92,8 @@ export default function Profile() {
                     formData.append("file", file);
 
                     try {
-                      await fetch("${API_URL}/users/me/avatar", {
+                      // ✅ FIX: Dùng template literal với backticks
+                      await fetch(`${API_URL}/users/me/avatar`, {
                         method: "POST",
                         headers: {
                           Authorization: `Bearer ${localStorage.getItem(
@@ -115,24 +116,23 @@ export default function Profile() {
           <div className="info">
             <h2>{profile.full_name}</h2>
             <p>
-  <FaBirthdayCake style={{ marginRight: "6px", color: "#ff4b2b" }} />
-  {profile.birthday ? (
-    <>
-      {new Date(profile.birthday).toLocaleDateString("vi-VN", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      })}{" "}
-      ({new Date().getFullYear() - new Date(profile.birthday).getFullYear()} tuổi)
-    </>
-  ) : (
-    "Chưa rõ"
-  )}
-  &nbsp;&nbsp;
-  <FaMapMarkerAlt style={{ marginRight: "4px", color: "#ff7b66" }} />
-  {profile.city || "Chưa cập nhật"}
-</p>
-
+              <FaBirthdayCake style={{ marginRight: "6px", color: "#ff4b2b" }} />
+              {profile.birthday ? (
+                <>
+                  {new Date(profile.birthday).toLocaleDateString("vi-VN", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })}{" "}
+                  ({new Date().getFullYear() - new Date(profile.birthday).getFullYear()} tuổi)
+                </>
+              ) : (
+                "Chưa rõ"
+              )}
+              &nbsp;&nbsp;
+              <FaMapMarkerAlt style={{ marginRight: "4px", color: "#ff7b66" }} />
+              {profile.city || "Chưa cập nhật"}
+            </p>
 
             <span className="status online">Đang hoạt động</span>
             <p className="bio">{profile.bio || "Chưa có mô tả bản thân"}</p>
@@ -145,127 +145,115 @@ export default function Profile() {
 
         {/* ==== MODAL CHỈNH SỬA ==== */}
         {editMode && (
-  <div className="edit-modal">
-    <h3>
-      <FiEdit2 /> Cập nhật thông tin cá nhân
-    </h3>
+          <div className="edit-modal">
+            <h3>
+              <FiEdit2 /> Cập nhật thông tin cá nhân
+            </h3>
 
-    {/* Họ và tên */}
-    <input
-      value={form.full_name || ""}
-      onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-      placeholder="Họ và tên"
-    />
+            <input
+              value={form.full_name || ""}
+              onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+              placeholder="Họ và tên"
+            />
 
-    {/* Thành phố */}
-    <input
-      value={form.city || ""}
-      onChange={(e) => setForm({ ...form, city: e.target.value })}
-      placeholder="Thành phố"
-    />
+            <input
+              value={form.city || ""}
+              onChange={(e) => setForm({ ...form, city: e.target.value })}
+              placeholder="Thành phố"
+            />
 
-    {/* Giới tính */}
-    <select
-      value={form.gender || ""}
-      onChange={(e) => setForm({ ...form, gender: e.target.value })}
-    >
-      <option value="">Chọn giới tính</option>
-      <option value="male">Nam</option>
-      <option value="female">Nữ</option>
-      <option value="other">Khác</option>
-    </select>
+            <select
+              value={form.gender || ""}
+              onChange={(e) => setForm({ ...form, gender: e.target.value })}
+            >
+              <option value="">Chọn giới tính</option>
+              <option value="male">Nam</option>
+              <option value="female">Nữ</option>
+              <option value="other">Khác</option>
+            </select>
 
-    {/* Nghề nghiệp */}
-    <input
-      value={form.job || ""}
-      onChange={(e) => setForm({ ...form, job: e.target.value })}
-      placeholder="Nghề nghiệp"
-    />
+            <input
+              value={form.job || ""}
+              onChange={(e) => setForm({ ...form, job: e.target.value })}
+              placeholder="Nghề nghiệp"
+            />
 
-    {/* Chiều cao */}
-    <input
-      type="number"
-      value={form.height || ""}
-      onChange={(e) => setForm({ ...form, height: e.target.value })}
-      placeholder="Chiều cao (cm)"
-    />
+            <input
+              type="number"
+              value={form.height || ""}
+              onChange={(e) => setForm({ ...form, height: e.target.value })}
+              placeholder="Chiều cao (cm)"
+            />
 
-    {/* Giới thiệu bản thân */}
-    <textarea
-      value={form.bio || ""}
-      onChange={(e) => setForm({ ...form, bio: e.target.value })}
-      placeholder="Giới thiệu bản thân"
-    />
+            <textarea
+              value={form.bio || ""}
+              onChange={(e) => setForm({ ...form, bio: e.target.value })}
+              placeholder="Giới thiệu bản thân"
+            />
 
-    {/* Sở thích */}
-    <div className="interests-edit">
-  <h4>Chọn hoặc nhập sở thích của bạn</h4>
-  <div className="preset-interests">
-    {["Âm nhạc", "Du lịch", "Game", "Thể thao", "Cà phê", "Phim ảnh"].map(
-      (i) => (
-        <span
-          key={i}
-          className={interests.includes(i) ? "active" : ""}
-          onClick={() =>
-            setInterests((prev) =>
-              prev.includes(i)
-                ? prev.filter((x) => x !== i)
-                : [...prev, i]
-            )
-          }
-        >
-          {i}
-        </span>
-      )
-    )}
-  </div>
+            <div className="interests-edit">
+              <h4>Chọn hoặc nhập sở thích của bạn</h4>
+              <div className="preset-interests">
+                {["Âm nhạc", "Du lịch", "Game", "Thể thao", "Cà phê", "Phim ảnh"].map(
+                  (i) => (
+                    <span
+                      key={i}
+                      className={interests.includes(i) ? "active" : ""}
+                      onClick={() =>
+                        setInterests((prev) =>
+                          prev.includes(i)
+                            ? prev.filter((x) => x !== i)
+                            : [...prev, i]
+                        )
+                      }
+                    >
+                      {i}
+                    </span>
+                  )
+                )}
+              </div>
 
-  {/* ✅ Cho phép nhập thêm sở thích */}
-  <input
-    type="text"
-    placeholder="Nhập thêm sở thích mới rồi nhấn Enter..."
-    onKeyDown={(e) => {
-      if (e.key === "Enter") {
-        const value = e.target.value.trim();
-        if (value && !interests.includes(value)) {
-  setInterests((prev) => [...prev, value]);
-  e.target.value = "";
-}
+              <input
+                type="text"
+                placeholder="Nhập thêm sở thích mới rồi nhấn Enter..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const value = e.target.value.trim();
+                    if (value && !interests.includes(value)) {
+                      setInterests((prev) => [...prev, value]);
+                      e.target.value = "";
+                    }
+                  }
+                }}
+              />
 
-      }
-    }}
-  />
+              <div className="selected-interests">
+                {interests.map((i, idx) => (
+                  <span key={idx} className="active">
+                    {i}
+                    <button
+                      className="remove-interest"
+                      onClick={() =>
+                        setInterests(interests.filter((x) => x !== i))
+                      }
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
 
-  {/* Hiển thị tất cả sở thích đã chọn */}
-  <div className="selected-interests">
-    {interests.map((i, idx) => (
-      <span key={idx} className="active">
-        {i}
-        <button
-          className="remove-interest"
-          onClick={() =>
-            setInterests(interests.filter((x) => x !== i))
-          }
-        >
-          ×
-        </button>
-      </span>
-    ))}
-  </div>
-</div>
-
-
-    <div className="modal-actions">
-      <button onClick={handleSubmit}>
-        <FaSave /> Lưu
-      </button>
-      <button onClick={() => setEditMode(false)}>
-        <FaTimesCircle /> Hủy
-      </button>
-    </div>
-  </div>
-)}
-
+            <div className="modal-actions">
+              <button onClick={handleSubmit}>
+                <FaSave /> Lưu
+              </button>
+              <button onClick={() => setEditMode(false)}>
+                <FaTimesCircle /> Hủy
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ==== THÔNG TIN CƠ BẢN ==== */}
         <div className="profile-section">
@@ -320,7 +308,8 @@ export default function Profile() {
                   formData.append("file", file);
 
                   try {
-                    await fetch("${API_URL}/photos/me", {
+                    // ✅ FIX: Dùng template literal với backticks
+                    await fetch(`${API_URL}/photos/me`, {
                       method: "POST",
                       headers: {
                         Authorization: `Bearer ${localStorage.getItem(
@@ -353,6 +342,7 @@ export default function Profile() {
                     {!p.is_avatar && (
                       <button
                         onClick={async () => {
+                          // ✅ FIX: Dùng template literal với backticks
                           await fetch(
                             `${API_URL}/photos/me/${p.photo_id}/set_avatar`,
                             {
@@ -374,6 +364,7 @@ export default function Profile() {
                     <button
                       onClick={async () => {
                         if (window.confirm("Xóa ảnh này?")) {
+                          // ✅ FIX: Dùng template literal với backticks
                           await fetch(
                             `${API_URL}/photos/me/${p.photo_id}`,
                             {
