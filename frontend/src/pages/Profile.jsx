@@ -11,7 +11,7 @@ import "./Profile.css";
 import { API_URL } from "../config";
 
 // 🎨 Icon imports
-import { FiEdit2, FiHeart, FiImage, FiPlusCircle } from "react-icons/fi";
+import { FiEdit2, FiHeart, FiImage, FiPlusCircle, FiLock, FiLogOut } from "react-icons/fi";
 import { FaCrown, FaTrashAlt, FaSave, FaTimesCircle, FaBirthdayCake, FaMapMarkerAlt } from "react-icons/fa";
 
 export default function Profile() {
@@ -21,6 +21,11 @@ export default function Profile() {
   const [form, setForm] = useState({});
   const [interests, setInterests] = useState([]);
   const [newAvatar, setNewAvatar] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changing, setChanging] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -54,6 +59,52 @@ export default function Profile() {
       alert("❌ Cập nhật thất bại!");
     }
   };
+  const handleChangePassword = async () => {
+  if (!oldPassword || !newPassword) {
+    alert("Vui lòng nhập đầy đủ thông tin!");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    alert("Mật khẩu mới không trùng khớp!");
+    return;
+  }
+
+  try {
+    setChanging(true);
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${API_URL}/auth/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        old_password: oldPassword,
+        new_password: newPassword,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(`❌ ${data.detail}`);
+      setChanging(false);
+      return;
+    }
+
+    alert("✅ Đổi mật khẩu thành công!");
+    setShowPasswordModal(false);
+
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi hệ thống!");
+  } finally {
+    setChanging(false);
+  }
+};
+
 
   if (loading) return <div className="loading">Đang tải hồ sơ...</div>;
   if (!profile)
@@ -255,6 +306,53 @@ export default function Profile() {
           </div>
         )}
 
+        {showPasswordModal && (
+  <div className="password-modal">
+    <div className="password-modal-content">
+      <h3>🔐 Đổi mật khẩu</h3>
+
+      <input
+        type="password"
+        placeholder="Mật khẩu hiện tại"
+        value={oldPassword}
+        onChange={(e) => setOldPassword(e.target.value)}
+      />
+
+      <input
+        type="password"
+        placeholder="Mật khẩu mới"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+      />
+
+      <input
+        type="password"
+        placeholder="Xác nhận mật khẩu mới"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+      />
+
+      <div className="password-modal-actions">
+        <button
+          className="save-btn"
+          disabled={changing}
+          onClick={handleChangePassword}
+        >
+          {changing ? "Đang xử lý..." : "Lưu"}
+        </button>
+
+        <button
+          className="cancel-btn"
+          onClick={() => setShowPasswordModal(false)}
+        >
+          Hủy
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
         {/* ==== THÔNG TIN CƠ BẢN ==== */}
         <div className="profile-section">
           <h3>Thông tin cơ bản</h3>
@@ -392,21 +490,38 @@ export default function Profile() {
           </div>
         </div>
 
+
+
         {/* ==== CÀI ĐẶT ==== */}
-        <div className="profile-section settings">
-          <h3>
-            <FiEdit2 /> Cài đặt tài khoản
-          </h3>
-          <button
-            className="btn-logout"
-            onClick={() => {
-              localStorage.removeItem("token");
-              window.location.href = "/";
-            }}
-          >
-            Đăng xuất
-          </button>
-        </div>
+        {/* ==== CÀI ĐẶT ==== */}
+<div className="profile-section settings">
+  <h3>
+    <FiEdit2 /> Cài đặt tài khoản
+  </h3>
+
+  {/* ⭐ Nhóm nút */}
+  <div className="settings-actions">
+    <button
+  className="btn-change-password"
+  onClick={() => setShowPasswordModal(true)}
+>
+  <FiLock /> Đổi mật khẩu
+</button>
+
+
+    <button
+  className="btn-logout"
+  onClick={() => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  }}
+>
+  <FiLogOut /> Đăng xuất
+</button>
+
+  </div>
+</div>
+
       </div>
 
       <Footer />

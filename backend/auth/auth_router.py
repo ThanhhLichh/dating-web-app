@@ -9,6 +9,7 @@ from auth.jwt_handler import create_access_token
 from auth.dependencies import get_current_user
 from pydantic import BaseModel, EmailStr
 from datetime import date
+from auth.auth_schema import ChangePasswordRequest  # nhớ import schema
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -84,3 +85,40 @@ def logout_user(current_user: User = Depends(get_current_user), db: Session = De
     )
     db.commit()
     return {"message": "👋 Đăng xuất thành công!"}
+
+
+# ==========================================
+# 🔐 CHANGE PASSWORD
+# ==========================================
+
+
+@router.post("/change-password")
+def change_password(
+    data: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    # 1. Kiểm tra mật khẩu cũ
+    if not verify_password(data.old_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mật khẩu cũ không đúng"
+        )
+
+    # 2. Không cho phép trùng mật khẩu cũ
+    if verify_password(data.new_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mật khẩu mới không được trùng mật khẩu cũ"
+        )
+
+    # 3. Hash mật khẩu mới
+    new_hashed = get_password_hash(data.new_password)
+    current_user.password_hash = new_hashed
+
+    db.add(current_user)
+    db.commit()
+
+    return {"message": "Đổi mật khẩu thành công 🎉"}
+
