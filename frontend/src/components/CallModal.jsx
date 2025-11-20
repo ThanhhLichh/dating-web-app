@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { FaPhone, FaVideo, FaMicrophone, FaMicrophoneSlash, FaVideo as FaVideoOn, FaVideoSlash, FaTimes } from "react-icons/fa";
+import {
+  FaPhone,
+  FaMicrophone,
+  FaMicrophoneSlash,
+  FaVideo as FaVideoOn,
+  FaVideoSlash,
+  FaTimes,
+} from "react-icons/fa";
 import "./CallModal.css";
 
 export default function CallModal({
@@ -23,61 +30,51 @@ export default function CallModal({
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
-  // ✅ Hiển thị local stream
+  // ALWAYS ATTACH LOCAL STREAM (Fix mất video người gọi)
   useEffect(() => {
-    if (localStream && localVideoRef.current) {
+    if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
     }
-  }, [localStream]);
+  }, [localStream, remoteStream, isCallAccepted]);
 
-  // ✅ Hiển thị remote stream
+  // Attach remote stream
   useEffect(() => {
-    if (remoteStream && remoteVideoRef.current) {
+    if (remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
   }, [remoteStream]);
 
-  // ✅ Đếm thời gian cuộc gọi
+  // Timer khi kết nối
   useEffect(() => {
-    if (!isIncoming && (remoteStream || isCallAccepted)) {
-      const interval = setInterval(() => {
-        setDuration((prev) => prev + 1);
-      }, 1000);
+    if (remoteStream || isCallAccepted) {
+      const interval = setInterval(() => setDuration((t) => t + 1), 1000);
       return () => clearInterval(interval);
     }
-  }, [isIncoming, remoteStream, isCallAccepted]);
+  }, [remoteStream, isCallAccepted]);
 
-  const formatDuration = (sec) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
+  const formatDuration = (t) => {
+    const m = Math.floor(t / 60);
+    const s = t % 60;
     return `${m}:${s < 10 ? "0" : ""}${s}`;
-  };
-
-  const handleToggleMic = () => {
-    const enabled = onToggleMic();
-    setIsMuted(!enabled);
-  };
-
-  const handleToggleCamera = () => {
-    const enabled = onToggleCamera();
-    setIsCameraOff(!enabled);
   };
 
   if (!isOpen) return null;
 
+  const callConnected = remoteStream || isCallAccepted;
+
   return (
     <div className="call-modal-overlay">
       <div className="call-modal">
-        {/* 📞 Cuộc gọi đến */}
+
+        {/* --------------------- INCOMING CALL --------------------- */}
         {isIncoming && !isCallAccepted && (
           <div className="incoming-call">
             <div className="caller-avatar">
               <FaPhone className="phone-icon pulse" />
             </div>
             <h2>{callerName}</h2>
-            <p>
-              {callType === "video" ? "📹 Video call" : "📞 Voice call"} đến...
-            </p>
+            <p>{callType === "video" ? "📹 Video call đến..." : "📞 Voice call đến..."}</p>
+
             <div className="call-actions">
               <button className="btn-accept" onClick={onAccept}>
                 <FaPhone /> Trả lời
@@ -89,10 +86,41 @@ export default function CallModal({
           </div>
         )}
 
-        {/* 📹 Đang trong cuộc gọi */}
-        {(remoteStream || isCallAccepted) && (
+        {/* --------------------- OUTGOING CALL (Chờ bắt máy) --------------------- */}
+        {!isIncoming && !callConnected && (
+          <div className="calling-out">
+            {/* Local video ALWAYS visible */}
+            {callType === "video" && (
+              <div className="local-video-container">
+                <video
+                  ref={localVideoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="local-video"
+                />
+              </div>
+            )}
+
+            <div className="caller-avatar">
+              <FaPhone className="phone-icon pulse" />
+            </div>
+
+            <h2>{callerName}</h2>
+            <p>Đang gọi...</p>
+
+            {/* Only 1 cancel button */}
+            <button className="btn-end" onClick={onEnd}>
+              <FaTimes /> Hủy
+            </button>
+          </div>
+        )}
+
+        {/* --------------------- ACTIVE CALL (Đã kết nối) --------------------- */}
+        {callConnected && (
           <div className="active-call">
-            {/* Video người đối phương */}
+
+            {/* Remote video */}
             <div className="remote-video-container">
               {callType === "video" ? (
                 remoteStream ? (
@@ -103,63 +131,46 @@ export default function CallModal({
                     className="remote-video"
                   />
                 ) : (
-                  <div style={{ 
-                      width: '100%', height: '100%', 
-                      display: 'flex', flexDirection: 'column',
-                      alignItems: 'center', justifyContent: 'center',
-                      color: 'white', background: '#111' 
-                  }}>
-                      <div className="pulse" style={{fontSize: '2rem', marginBottom: '10px'}}>📡</div>
-                      <p>Đang kết nối tín hiệu...</p>
+                  <div className="connecting">
+                    <div className="pulse" style={{ fontSize: "2rem", marginBottom: "10px" }}>
+                      📡
+                    </div>
+                    <p>Đang kết nối tín hiệu...</p>
                   </div>
                 )
               ) : (
                 <div className="audio-call-avatar">
                   <FaPhone className="phone-icon" />
                   <p>{callerName}</p>
-                  {!remoteStream && <small style={{color: '#ddd'}}>Đang kết nối...</small>}
                 </div>
               )}
             </div>
 
-            {/* Video của mình (góc phải trên) */}
+            {/* Local video ALWAYS visible */}
             {callType === "video" && (
               <div className="local-video-container">
-                {localStream ? (
-                  <video
-                    ref={localVideoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="local-video"
-                  />
-                ) : (
-                  /* Fallback khi không có camera */
-                  <div style={{
-                    width: '100%', height: '100%', 
-                    background: '#333', display: 'flex', 
-                    flexDirection: 'column',
-                    alignItems: 'center', justifyContent: 'center', color: '#888'
-                  }}>
-                     <FaVideoSlash size={24} />
-                     <span style={{fontSize: '10px', marginTop: '4px'}}>No Cam</span>
-                  </div>
-                )}
+                <video
+                  ref={localVideoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="local-video"
+                />
               </div>
             )}
 
-            {/* Thông tin cuộc gọi */}
+            {/* Call Info */}
             <div className="call-info">
               <h3>{callerName}</h3>
               <p>{formatDuration(duration)}</p>
             </div>
 
-            {/* Nút điều khiển */}
+            {/* Controls ONLY when connected */}
             <div className="call-controls">
+
               <button
                 className={`btn-control ${isMuted ? "muted" : ""}`}
-                onClick={handleToggleMic}
-                title={isMuted ? "Bật mic" : "Tắt mic"}
+                onClick={() => setIsMuted(!onToggleMic())}
               >
                 {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
               </button>
@@ -167,33 +178,19 @@ export default function CallModal({
               {callType === "video" && (
                 <button
                   className={`btn-control ${isCameraOff ? "muted" : ""}`}
-                  onClick={handleToggleCamera}
-                  title={isCameraOff ? "Bật camera" : "Tắt camera"}
+                  onClick={() => setIsCameraOff(!onToggleCamera())}
                 >
                   {isCameraOff ? <FaVideoSlash /> : <FaVideoOn />}
                 </button>
               )}
 
-              <button className="btn-end" onClick={onEnd} title="Kết thúc">
+              <button className="btn-end" onClick={onEnd}>
                 <FaPhone />
               </button>
             </div>
           </div>
         )}
 
-        {/* 📞 Đang gọi... */}
-        {!isIncoming && !remoteStream && !isCallAccepted && (
-          <div className="calling-out">
-            <div className="caller-avatar">
-              <FaPhone className="phone-icon pulse" />
-            </div>
-            <h2>{callerName}</h2>
-            <p>Đang gọi...</p>
-            <button className="btn-end" onClick={onEnd}>
-              <FaTimes /> Hủy
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

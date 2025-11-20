@@ -240,12 +240,12 @@
   border-radius: 50%;
   background: linear-gradient(135deg, #e74c3c, #c0392b);
   padding: 0;
-  transform: rotate(135deg);
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .btn-end:hover {
-  transform: rotate(135deg) scale(1.1);
+  transform: scale(1.12);
 }

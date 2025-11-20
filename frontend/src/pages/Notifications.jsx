@@ -7,15 +7,73 @@ import {
   likeBackUser,
   skipUser,
 } from "../services/notificationService";
+import { getProfileById } from "../services/userService";
 import "./Notifications.css";
 import { API_URL } from "../config";
+
+// React Icons
+import {
+  FaHeart,
+  FaEye,
+  FaTimes,
+  FaStar,
+  FaCommentDots,
+  FaPhone,
+  FaClock,
+} from "react-icons/fa";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // ✅ Lấy danh sách thông báo
+  // Modal chi tiết
+  const [showDetail, setShowDetail] = useState(false);
+  const [detailUser, setDetailUser] = useState(null);
+
+  // 💠 Xử lý nội dung theo Style C đẹp nhất
+  const renderContent = (n) => {
+    const name = n.sender_name || "Người dùng";
+
+    switch (n.type) {
+      case "like":
+        return (
+          <>
+            <FaHeart className="notif-icon heart" />{" "}
+            <strong>{name}</strong> đã thích bạn! 💖
+          </>
+        );
+
+      case "match":
+        return (
+          <>
+            <FaStar className="notif-icon star" /> Chúc mừng! Bạn đã match với{" "}
+            <strong>{name}</strong> 💕
+          </>
+        );
+
+      case "message":
+        return (
+          <>
+            <FaCommentDots className="notif-icon message" />{" "}
+            <strong>{name}</strong> đã gửi tin nhắn cho bạn 💬
+          </>
+        );
+
+      case "call":
+        return (
+          <>
+            <FaPhone className="notif-icon phone" /> Bạn có cuộc gọi nhỡ từ{" "}
+            <strong>{name}</strong> 📞
+          </>
+        );
+
+      default:
+        return n.content;
+    }
+  };
+
+  // API lấy thông báo
   useEffect(() => {
     const fetchNotif = async () => {
       try {
@@ -37,9 +95,8 @@ export default function Notifications() {
       alert("💖 Bạn đã thích lại người này!");
       const updated = await getNotifications();
       setNotifications(updated);
-    } catch (err) {
-      console.error("Lỗi khi thích lại:", err);
-      alert("Không thể thích lại người này!");
+    } catch {
+      alert("Không thể thích lại!");
     }
   };
 
@@ -53,12 +110,18 @@ export default function Notifications() {
     }
   };
 
-  // 👀 Xem trang cá nhân
-  const handleViewProfile = (senderId) => {
-    navigate(`/profile/${senderId}`);
+  // 👀 Xem chi tiết
+  const handleViewDetail = async (senderId) => {
+    try {
+      const data = await getProfileById(senderId);
+      setDetailUser(data);
+      setShowDetail(true);
+    } catch {
+      alert("Không thể tải hồ sơ chi tiết!");
+    }
   };
 
-  // 💬 Chuyển đến trang chat (MỚI)
+  // 💬 Nhắn tin
   const handleGoToChat = () => {
     navigate("/messages");
   };
@@ -82,73 +145,146 @@ export default function Notifications() {
                 className={`notif-card ${n.is_read ? "read" : "unread"}`}
               >
                 <img
-                  src={`${API_URL}${
-                    n.sender_avatar || "/default-avatar.png"
-                  }`}
+                  src={`${API_URL}${n.sender_avatar || "/default-avatar.png"}`}
                   alt="sender"
                   className="notif-avatar"
                 />
 
                 <div className="notif-info">
-                  <p
-                    className="notif-content"
-                    dangerouslySetInnerHTML={{ __html: n.content }}
-                  />
+                  <p className="notif-content">{renderContent(n)}</p>
+
                   <span className="notif-time">
-                    🕒 {new Date(n.created_at).toLocaleString("vi-VN")}
+                    <FaClock />{" "}
+                    {new Date(n.created_at).toLocaleString("vi-VN")}
                   </span>
 
-                  {/* 1. Thông báo LIKE */}
+                  {/* LIKE */}
                   {n.type === "like" && (
                     <div className="notif-actions">
-                      <button className="btn-like" onClick={() => handleLikeBack(n.sender_id)}>
-                        ❤️ Thích lại
+                      <button
+                        className="btn-like"
+                        onClick={() => handleLikeBack(n.sender_id)}
+                      >
+                        <FaHeart /> Thích lại
                       </button>
-                      <button className="btn-view" onClick={() => handleViewProfile(n.sender_id)}>
-                        👀 Xem
+                      <button
+                        className="btn-view"
+                        onClick={() => handleViewDetail(n.sender_id)}
+                      >
+                        <FaEye /> Xem
                       </button>
-                      <button className="btn-skip" onClick={() => handleDismiss(n.noti_id, n.sender_id)}>
-                        ❌ Bỏ qua
+                      <button
+                        className="btn-skip"
+                        onClick={() => handleDismiss(n.noti_id, n.sender_id)}
+                      >
+                        <FaTimes /> Bỏ qua
                       </button>
                     </div>
                   )}
 
-                  {/* 2. Thông báo MATCH */}
+                  {/* MATCH */}
                   {n.type === "match" && (
                     <div className="notif-actions">
-                      <button className="btn-match" onClick={() => handleViewProfile(n.sender_id)}>
-                        🎉 Xem người đã match
+                      <button
+                        className="btn-match"
+                        onClick={() => handleViewDetail(n.sender_id)}
+                      >
+                        <FaStar /> Xem người đã match
                       </button>
                       <button className="btn-reply" onClick={handleGoToChat}>
-                        💬 Nhắn tin ngay
+                        <FaCommentDots /> Nhắn tin ngay
                       </button>
                     </div>
                   )}
 
-                  {/* 3. Thông báo TIN NHẮN (MỚI) */}
+                  {/* MESSAGE */}
                   {n.type === "message" && (
                     <div className="notif-actions">
                       <button className="btn-reply" onClick={handleGoToChat}>
-                        💬 Trả lời ngay
-                      </button>
-                    </div>
-                  )}
-                  
-                  {/* 4. Thông báo CUỘC GỌI */}
-                  {n.type === "call" && (
-                    <div className="notif-actions">
-                      <button className="btn-view" onClick={handleGoToChat}>
-                        📞 Gọi lại
+                        <FaCommentDots /> Trả lời ngay
                       </button>
                     </div>
                   )}
 
+                  {/* CALL */}
+                  {n.type === "call" && (
+                    <div className="notif-actions">
+                      <button
+                        className="btn-view"
+                        onClick={() => handleViewDetail(n.sender_id)}
+                      >
+                        <FaPhone /> Gọi lại
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Modal chi tiết */}
+      {showDetail && detailUser && (
+        <div className="modal-overlay" onClick={() => setShowDetail(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setShowDetail(false)}>
+              <FaTimes />
+            </button>
+
+            <h2 className="modal-title">Hồ sơ chi tiết</h2>
+
+            <img
+              src={`${API_URL}${
+                detailUser.photos?.find((p) => p.is_avatar)?.url ||
+                "/default-avatar.png"
+              }`}
+              alt="avatar"
+              className="modal-avatar"
+            />
+
+            <h2>{detailUser.full_name}</h2>
+
+            <p className="modal-sub">
+              🎂 {detailUser.birthday?.slice(0, 10)} • ⚥ {detailUser.gender} • 📍{" "}
+              {detailUser.city}
+            </p>
+
+            <p className="modal-bio">
+              {detailUser.bio || "Chưa có giới thiệu bản thân"}
+            </p>
+
+            {detailUser.interests?.length > 0 && (
+              <div className="modal-interests">
+                <h4>Sở thích</h4>
+                <div className="interests-list">
+                  {detailUser.interests.map((i, idx) => (
+                    <span key={idx}>{i}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {detailUser.photos?.length > 1 && (
+              <div className="modal-photos">
+                <h4>Bộ sưu tập ảnh</h4>
+                <div className="photo-grid">
+                  {detailUser.photos
+                    .filter((p) => !p.is_avatar)
+                    .map((p) => (
+                      <img
+                        key={p.photo_id}
+                        src={`${API_URL}${p.url}`}
+                        alt="photo"
+                        className="modal-photo"
+                      />
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <Footer />
     </>

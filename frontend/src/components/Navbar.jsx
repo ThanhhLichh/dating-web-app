@@ -112,12 +112,12 @@ export default function Navbar() {
 
       {/* RIGHT: Notifications + User */}
       <div className="navbar-right">
-        <div className="notif-icon" onClick={() => setShowNotif(!showNotif)}>
+        {/* <div className="notif-icon" onClick={() => setShowNotif(!showNotif)}>
           <FaBell />
           {notifications.some((n) => !n.is_read) && (
             <span className="notif-badge"></span>
           )}
-        </div>
+        </div> */}
 
         <span className="greeting">Hi, {user.full_name.split(" ")[0]}</span>
 
