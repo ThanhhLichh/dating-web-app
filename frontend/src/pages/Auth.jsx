@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { login, register } from "../services/authService";
 import "./Auth.css";
 import logo from "../assets/logo.svg";
-import img1 from "../assets/sig4.png";
-import img2 from "../assets/sig2.png";
-import img3 from "../assets/sig1.png";
+import img1 from "../assets/sig4.webp";
+import img2 from "../assets/sig2.webp";
+import img3 from "../assets/sig1.webp";
 
 
 

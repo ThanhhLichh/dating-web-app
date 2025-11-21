@@ -30,6 +30,9 @@ export default function CallModal({
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
+  const remoteAudioRef = useRef(null);
+
+
   // ALWAYS ATTACH LOCAL STREAM (Fix mất video người gọi)
   useEffect(() => {
     if (localVideoRef.current && localStream) {
@@ -51,6 +54,13 @@ export default function CallModal({
       return () => clearInterval(interval);
     }
   }, [remoteStream, isCallAccepted]);
+
+  useEffect(() => {
+  if (remoteAudioRef.current && remoteStream) {
+    remoteAudioRef.current.srcObject = remoteStream;
+  }
+}, [remoteStream]);
+
 
   const formatDuration = (t) => {
     const m = Math.floor(t / 60);
@@ -116,80 +126,86 @@ export default function CallModal({
           </div>
         )}
 
-        {/* --------------------- ACTIVE CALL (Đã kết nối) --------------------- */}
-        {callConnected && (
-          <div className="active-call">
+       {/* --------------------- ACTIVE CALL (Đã kết nối) --------------------- */}
+{callConnected && (
+  <div className="active-call">
 
-            {/* Remote video */}
-            <div className="remote-video-container">
-              {callType === "video" ? (
-                remoteStream ? (
-                  <video
-                    ref={remoteVideoRef}
-                    autoPlay
-                    playsInline
-                    className="remote-video"
-                  />
-                ) : (
-                  <div className="connecting">
-                    <div className="pulse" style={{ fontSize: "2rem", marginBottom: "10px" }}>
-                      📡
-                    </div>
-                    <p>Đang kết nối tín hiệu...</p>
-                  </div>
-                )
-              ) : (
-                <div className="audio-call-avatar">
-                  <FaPhone className="phone-icon" />
-                  <p>{callerName}</p>
-                </div>
-              )}
+    {/* Remote video hoặc avatar cho voice call */}
+    <div className="remote-video-container">
+      {callType === "video" ? (
+        remoteStream ? (
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            className="remote-video"
+          />
+        ) : (
+          <div className="connecting">
+            <div className="pulse" style={{ fontSize: "2rem", marginBottom: "10px" }}>
+              📡
             </div>
-
-            {/* Local video ALWAYS visible */}
-            {callType === "video" && (
-              <div className="local-video-container">
-                <video
-                  ref={localVideoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="local-video"
-                />
-              </div>
-            )}
-
-            {/* Call Info */}
-            <div className="call-info">
-              <h3>{callerName}</h3>
-              <p>{formatDuration(duration)}</p>
-            </div>
-
-            {/* Controls ONLY when connected */}
-            <div className="call-controls">
-
-              <button
-                className={`btn-control ${isMuted ? "muted" : ""}`}
-                onClick={() => setIsMuted(!onToggleMic())}
-              >
-                {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
-              </button>
-
-              {callType === "video" && (
-                <button
-                  className={`btn-control ${isCameraOff ? "muted" : ""}`}
-                  onClick={() => setIsCameraOff(!onToggleCamera())}
-                >
-                  {isCameraOff ? <FaVideoSlash /> : <FaVideoOn />}
-                </button>
-              )}
-
-              <button className="btn-end" onClick={onEnd}>
-                <FaPhone />
-              </button>
-            </div>
+            <p>Đang kết nối tín hiệu...</p>
           </div>
-        )}
+        )
+      ) : (
+        <div className="audio-call-avatar">
+          <FaPhone className="phone-icon" />
+          <p>{callerName}</p>
+        </div>
+      )}
+    </div>
+
+    {/* ✅ Remote audio player (quan trọng!!) */}
+    {callType === "voice" && (
+      <audio ref={remoteAudioRef} autoPlay playsInline />
+    )}
+
+    {/* Local video ALWAYS visible */}
+    {callType === "video" && (
+      <div className="local-video-container">
+        <video
+          ref={localVideoRef}
+          autoPlay
+          playsInline
+          muted
+          className="local-video"
+        />
+      </div>
+    )}
+
+    {/* Call Info */}
+    <div className="call-info">
+      <h3>{callerName}</h3>
+      <p>{formatDuration(duration)}</p>
+    </div>
+
+    {/* Controls */}
+    <div className="call-controls">
+      <button
+        className={`btn-control ${isMuted ? "muted" : ""}`}
+        onClick={() => setIsMuted(!onToggleMic())}
+      >
+        {isMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+      </button>
+
+      {callType === "video" && (
+        <button
+          className={`btn-control ${isCameraOff ? "muted" : ""}`}
+          onClick={() => setIsCameraOff(!onToggleCamera())}
+        >
+          {isCameraOff ? <FaVideoSlash /> : <FaVideoOn />}
+        </button>
+      )}
+
+      <button className="btn-end" onClick={onEnd}>
+        <FaPhone />
+      </button>
+    </div>
+
+  </div>
+)}
+
 
       </div>
     </div>

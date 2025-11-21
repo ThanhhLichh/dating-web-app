@@ -104,7 +104,7 @@ export default function Home() {
               <button className="btn-start" onClick={() => fetchUser()}>
                 Bắt đầu tìm kiếm
               </button>
-              <button className="btn-learn">Tìm hiểu thêm</button>
+              {/* <button className="btn-learn">Tìm hiểu thêm</button> */}
             </div>
           </div>
         </header>
