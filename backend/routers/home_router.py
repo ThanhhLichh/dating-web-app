@@ -136,6 +136,53 @@ def skip_user(target_id: int, db: Session = Depends(get_db), current_user: User 
     return {"message": "Đã bỏ qua người này!"}
 
 
+# 📌 Lấy danh sách người đã bỏ qua
+@router.get("/skipped")
+def get_skipped_users(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    sql = text("""
+        SELECT u.user_id, u.full_name,
+               p.url AS avatar
+        FROM skips s
+        JOIN users u ON s.target_user_id = u.user_id
+        LEFT JOIN photos p ON u.user_id = p.user_id AND p.is_avatar = 1
+        WHERE s.user_id = :uid
+        ORDER BY s.created_at DESC
+    """)
+
+    rows = db.execute(sql, {"uid": current_user.user_id}).fetchall()
+
+    return [dict(r._mapping) for r in rows]
+
+
+# ♻️ Gỡ skip (cho người đó quay lại recommendation)
+@router.delete("/skipped/{target_id}")
+def undo_skip_user(
+    target_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    check = db.execute(text("""
+        SELECT 1 FROM skips 
+        WHERE user_id = :uid AND target_user_id = :tid
+    """), {"uid": current_user.user_id, "tid": target_id}).fetchone()
+
+    if not check:
+        raise HTTPException(status_code=404, detail="Người này không nằm trong danh sách đã bỏ qua")
+
+    db.execute(text("""
+        DELETE FROM skips 
+        WHERE user_id = :uid AND target_user_id = :tid
+    """), {"uid": current_user.user_id, "tid": target_id})
+
+    db.commit()
+
+    return {"message": "Đã gỡ khỏi danh sách skip!"}
+
+
+
 # ❤️ Thích người dùng khác
 @router.post("/{target_id}/like")
 def like_user(target_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):

@@ -9,18 +9,23 @@ import {
 } from "../services/notificationService";
 import { getProfileById } from "../services/userService";
 import "./Notifications.css";
+import "./Home.css";
 import { API_URL } from "../config";
 
-// React Icons
 import {
   FaHeart,
   FaEye,
   FaTimes,
-  FaStar,
   FaCommentDots,
   FaPhone,
   FaClock,
+  FaMapMarkerAlt,
+  FaBirthdayCake,
+  FaVenusMars,
+  FaStar     
 } from "react-icons/fa";
+
+
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -224,67 +229,87 @@ export default function Notifications() {
         )}
       </div>
 
-      {/* Modal chi tiết */}
       {showDetail && detailUser && (
-        <div className="modal-overlay" onClick={() => setShowDetail(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setShowDetail(false)}>
-              <FaTimes />
-            </button>
+  <div className="modal-overlay" onClick={() => setShowDetail(false)}>
+    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
 
-            <h2 className="modal-title">Hồ sơ chi tiết</h2>
+      {/* CLOSE */}
+      <button className="close-btn" onClick={() => setShowDetail(false)}>
+        <FaTimes />
+      </button>
 
-            <img
-              src={`${API_URL}${
-                detailUser.photos?.find((p) => p.is_avatar)?.url ||
-                "/default-avatar.png"
-              }`}
-              alt="avatar"
-              className="modal-avatar"
-            />
+      {/* TITLE */}
+      <h2 className="modal-title">Hồ sơ chi tiết</h2>
 
-            <h2>{detailUser.full_name}</h2>
+      {/* AVATAR */}
+      <img
+        src={`${API_URL}${
+          detailUser.photos?.find((p) => p.is_avatar)?.url ||
+          "/default-avatar.png"
+        }`}
+        className="modal-avatar"
+        alt="avatar"
+      />
 
-            <p className="modal-sub">
-              🎂 {detailUser.birthday?.slice(0, 10)} • ⚥ {detailUser.gender} • 📍{" "}
-              {detailUser.city}
-            </p>
+      {/* NAME */}
+      <h2>{detailUser.full_name}</h2>
 
-            <p className="modal-bio">
-              {detailUser.bio || "Chưa có giới thiệu bản thân"}
-            </p>
+      {/* SUB INFO – CHUẨN 3 ICON */}
+      <p className="modal-sub">
+        <FaBirthdayCake style={{ marginRight: 6, color: "#ff4b2b" }} />
+        {detailUser.birthday?.slice(0, 10) || "—"}
 
-            {detailUser.interests?.length > 0 && (
-              <div className="modal-interests">
-                <h4>Sở thích</h4>
-                <div className="interests-list">
-                  {detailUser.interests.map((i, idx) => (
-                    <span key={idx}>{i}</span>
-                  ))}
-                </div>
-              </div>
-            )}
+        &nbsp;•&nbsp;
 
-            {detailUser.photos?.length > 1 && (
-              <div className="modal-photos">
-                <h4>Bộ sưu tập ảnh</h4>
-                <div className="photo-grid">
-                  {detailUser.photos
-                    .filter((p) => !p.is_avatar)
-                    .map((p) => (
-                      <img
-                        key={p.photo_id}
-                        src={`${API_URL}${p.url}`}
-                        alt="photo"
-                        className="modal-photo"
-                      />
-                    ))}
-                </div>
-              </div>
-            )}
+        <FaVenusMars style={{ marginRight: 6, color: "#ff66a3" }} />
+        {detailUser.gender || "—"}
+
+        &nbsp;•&nbsp;
+
+        <FaMapMarkerAlt style={{ marginRight: 6, color: "#ff7b66" }} />
+        {detailUser.city || "—"}
+      </p>
+
+      {/* BIO */}
+      <p className="modal-bio">
+        {detailUser.bio || "Chưa có giới thiệu bản thân"}
+      </p>
+
+      {/* INTERESTS */}
+      {detailUser.interests?.length > 0 && (
+        <div className="modal-interests">
+          <h4>Sở thích</h4>
+          <div className="interests-list">
+            {detailUser.interests.map((i, idx) => (
+              <span key={idx}>{i}</span>
+            ))}
           </div>
         </div>
       )}
+
+      {/* PHOTO GALLERY */}
+      {detailUser.photos?.length > 1 && (
+        <div className="modal-photos">
+          <h4>Bộ sưu tập ảnh</h4>
+          <div className="photo-grid">
+            {(detailUser.photos || [])
+              .filter((p) => !p.is_avatar)
+              .map((p) => (
+                <img
+                  key={p.photo_id}
+                  src={`${API_URL}${p.url}`}
+                  alt="photo"
+                />
+              ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+  </div>
+)}
+
+
 
       <Footer />
     </>

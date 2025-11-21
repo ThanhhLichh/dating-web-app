@@ -8,11 +8,12 @@ import {
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./Profile.css";
+import "./Home.css";
 import { API_URL } from "../config";
 
 // 🎨 Icon imports
-import { FiEdit2, FiHeart, FiImage, FiPlusCircle, FiLock, FiLogOut } from "react-icons/fi";
-import { FaCrown, FaTrashAlt, FaSave, FaTimesCircle, FaBirthdayCake, FaMapMarkerAlt } from "react-icons/fa";
+import { FiEdit2, FiHeart, FiImage, FiPlusCircle, FiLock, FiLogOut, FiEyeOff } from "react-icons/fi";
+import { FaCrown, FaTrashAlt, FaSave, FaTimesCircle, FaBirthdayCake, FaMapMarkerAlt, FaVenusMars  } from "react-icons/fa";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -26,6 +27,13 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changing, setChanging] = useState(false);
+  // ==== SKIP LIST ====
+const [showSkippedModal, setShowSkippedModal] = useState(false);
+const [skippedUsers, setSkippedUsers] = useState([]);
+const [detailUser, setDetailUser] = useState(null);
+const [showDetailModal, setShowDetailModal] = useState(false);
+
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -105,6 +113,51 @@ export default function Profile() {
   }
 };
 
+// Lấy danh sách người đã bỏ qua
+const fetchSkippedUsers = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_URL}/home/skipped`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    setSkippedUsers(data);
+  } catch (err) {
+    console.error("Lỗi tải skip:", err);
+  }
+};
+
+// Gỡ skip
+const undoSkip = async (uid) => {
+  try {
+    const token = localStorage.getItem("token");
+    await fetch(`${API_URL}/home/skipped/${uid}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchSkippedUsers(); 
+  } catch (err) {
+    console.error("Lỗi undo:", err);
+  }
+};
+
+// Xem chi tiết user bị skip
+const viewSkipDetail = async (uid) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_URL}/users/${uid}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    setDetailUser(data);
+    setShowDetailModal(true);
+  } catch (err) {
+    console.error("Lỗi xem hồ sơ:", err);
+  }
+};
+
+
+
 
   if (loading) return <div className="loading">Đang tải hồ sơ...</div>;
   if (!profile)
@@ -167,23 +220,31 @@ export default function Profile() {
           <div className="info">
             <h2>{profile.full_name}</h2>
             <p>
-              <FaBirthdayCake style={{ marginRight: "6px", color: "#ff4b2b" }} />
-              {profile.birthday ? (
-                <>
-                  {new Date(profile.birthday).toLocaleDateString("vi-VN", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  })}{" "}
-                  ({new Date().getFullYear() - new Date(profile.birthday).getFullYear()} tuổi)
-                </>
-              ) : (
-                "Chưa rõ"
-              )}
-              &nbsp;&nbsp;
-              <FaMapMarkerAlt style={{ marginRight: "4px", color: "#ff7b66" }} />
-              {profile.city || "Chưa cập nhật"}
-            </p>
+  <FaBirthdayCake style={{ marginRight: "6px", color: "#ff4b2b" }} />
+  {profile.birthday ? (
+    <>
+      {new Date(profile.birthday).toLocaleDateString("vi-VN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })}{" "}
+      ({new Date().getFullYear() - new Date(profile.birthday).getFullYear()} tuổi)
+    </>
+  ) : (
+    "Chưa rõ"
+  )}
+
+  &nbsp;•&nbsp;
+
+  <FaVenusMars style={{ marginRight: "6px", color: "#ff66a3" }} />
+  {profile.gender || "Không rõ"}
+
+  &nbsp;•&nbsp;
+
+  <FaMapMarkerAlt style={{ marginRight: "4px", color: "#ff7b66" }} />
+  {profile.city || "Chưa cập nhật"}
+</p>
+
 
             <span className="status online">Đang hoạt động</span>
             <p className="bio">{profile.bio || "Chưa có mô tả bản thân"}</p>
@@ -352,6 +413,130 @@ export default function Profile() {
   </div>
 )}
 
+{showSkippedModal && (
+  <div className="password-modal">
+    <div className="password-modal-content">
+
+      <h3>👁‍🗨 Danh sách người đã bỏ qua</h3>
+
+      {skippedUsers.length === 0 && (
+        <p style={{ textAlign: "center", opacity: 0.6 }}>
+          Không có ai trong danh sách.
+        </p>
+      )}
+
+      {skippedUsers.map((u) => (
+        <div key={u.user_id} className="skipped-item">
+
+          <img
+            src={`${API_URL}${u.avatar || "/default-avatar.png"}`}
+            className="skipped-avatar"
+          />
+
+          <div className="skipped-info">
+            <h4>{u.full_name}</h4>
+          </div>
+
+          <div className="skipped-actions">
+            <button className="view-btn" onClick={() => viewSkipDetail(u.user_id)}>
+              Xem
+            </button>
+
+            <button className="undo-btn" onClick={() => undoSkip(u.user_id)}>
+              Hoàn tác
+            </button>
+          </div>
+        </div>
+      ))}
+
+      <button className="cancel-btn" onClick={() => setShowSkippedModal(false)}>
+        Đóng
+      </button>
+
+    </div>
+  </div>
+)}
+
+{showDetailModal && detailUser && (
+  <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
+    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      
+      <button className="close-btn" onClick={() => setShowDetailModal(false)}>
+        <FaTimesCircle />
+      </button>
+
+      <h2 className="modal-title">Hồ sơ chi tiết</h2>
+
+      {/* Avatar */}
+      <img
+        src={`${API_URL}${
+          detailUser.photos?.find((p) => p.is_avatar)?.url ||
+          "/default-avatar.png"
+        }`}
+        alt="Avatar"
+        className="modal-avatar"
+      />
+
+      {/* Tên */}
+      <h2>{detailUser.full_name}</h2>
+
+      {/* Info */}
+      <p className="modal-sub">
+  <FaBirthdayCake style={{ marginRight: 6, color: "#ff4b2b" }} />
+  {detailUser.birthday?.slice(0, 10) || "—"}
+
+  &nbsp;•&nbsp;
+
+  <FaVenusMars style={{ marginRight: 6, color: "#ff66a3" }} />
+  {detailUser.gender || "—"}
+
+  &nbsp;•&nbsp;
+
+  <FaMapMarkerAlt style={{ marginRight: 6, color: "#ff7b66" }} />
+  {detailUser.city || "—"}
+</p>
+
+
+      {/* Bio */}
+      <p className="modal-bio">{detailUser.bio || "Chưa có giới thiệu bản thân"}</p>
+
+      {/* Interests */}
+      {detailUser.interests?.length > 0 && (
+        <div className="modal-interests">
+          <h4>Sở thích</h4>
+          <div className="interests-list">
+            {detailUser.interests.map((i, idx) => (
+              <span key={idx}>{i}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Photos gallery */}
+      {detailUser.photos?.length > 1 && (
+        <div className="modal-photos">
+          <h4>Bộ sưu tập ảnh</h4>
+          <div className="photo-grid">
+            {detailUser.photos
+              .filter((p) => !p.is_avatar)
+              .map((p) => (
+                <img
+                  key={p.photo_id}
+                  src={`${API_URL}${p.url}`}
+                  alt="photo"
+                  className="modal-photo"
+                />
+              ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+
+
+
 
         {/* ==== THÔNG TIN CƠ BẢN ==== */}
         <div className="profile-section">
@@ -508,7 +693,15 @@ export default function Profile() {
   <FiLock /> Đổi mật khẩu
 </button>
 
-
+  <button
+    className="btn-change-password"
+    onClick={() => {
+      fetchSkippedUsers();
+      setShowSkippedModal(true);
+    }}
+  >
+    <FiEyeOff /> Người đã bỏ qua
+  </button>
     <button
   className="btn-logout"
   onClick={() => {

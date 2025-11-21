@@ -243,11 +243,18 @@ export default function Home() {
 
             <h2>{detailUser.full_name}</h2>
             <p className="modal-sub">
-              <FaBirthdayCake />{" "}
-              {detailUser.birthday?.slice(0, 10) || "Chưa rõ"} &nbsp;•&nbsp;
-              <FaVenusMars /> {detailUser.gender || "Không rõ"} &nbsp;•&nbsp;
-              <FaMapMarkerAlt /> {detailUser.city || "Chưa cập nhật"}
-            </p>
+  <FaBirthdayCake style={{ marginRight: 6, color: "#ff4b2b" }} />
+  {detailUser.birthday?.slice(0, 10) || "Chưa rõ"}
+  &nbsp;•&nbsp;
+
+  <FaVenusMars style={{ marginRight: 6, color: "#ff66a3" }} />
+  {detailUser.gender || "Không rõ"}
+  &nbsp;•&nbsp;
+
+  <FaMapMarkerAlt style={{ marginRight: 6, color: "#ff7b66" }} />
+  {detailUser.city || "Chưa cập nhật"}
+</p>
+
 
             <p className="modal-bio">
               {detailUser.bio || "Chưa có giới thiệu bản thân"}
