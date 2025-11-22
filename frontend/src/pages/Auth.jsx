@@ -133,9 +133,12 @@ const handlePrev = () => {
           </div>
 
           <div className="nav-links">
-            <a href="#">Blog</a>
-            <a href="#">Liên hệ</a>
-            <a href="#">Về chúng tôi</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=buithanhlich@gmail.com" target="_blank">
+            Liên hệ
+          </a>
+
+
+            <a href="/about">Về chúng tôi</a>
           </div>
         </div>
 

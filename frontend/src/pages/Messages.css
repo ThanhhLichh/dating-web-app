@@ -625,11 +625,31 @@
 
 .emoji-picker {
   position: absolute;
-  bottom: 90px;
-  right: 90px;
-  z-index: 50;
-  animation: popIn 0.3s ease;
+  bottom: 80px;       /* nằm ngay trên khung nhập */
+  right: 25px;        /* sát nút gửi */
+  transform-origin: bottom right;
+  z-index: 9999;
+  animation: popIn 0.25s ease;
 }
+
+/* Khi màn nhỏ — căn giữa và không bị tràn */
+@media (max-width: 768px) {
+  .emoji-picker {
+    right: 10px;
+    left: auto;
+    bottom: 70px;
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 480px) {
+  .emoji-picker {
+    right: 5px;
+    bottom: 65px;
+    transform: scale(0.85);
+  }
+}
+
 
 @keyframes popIn {
   from { transform: scale(0) rotate(-10deg); opacity: 0; }
@@ -674,5 +694,35 @@
 
   .chat-bubble {
     max-width: 80%;
+  }
+}
+/* ==== FIX RESPONSIVE SEND BUTTON ==== */
+@media (max-width: 768px) {
+
+  /* container input */
+  .chat-input {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  /* input text chiếm toàn bộ chiều rộng */
+  .chat-input input {
+    flex: 1 !important;
+    width: 100% !important;
+    min-width: 0;
+  }
+
+  /* nút emoji */
+  .emoji-btn {
+    font-size: 1.4rem;
+    margin-left: 6px;
+  }
+
+  /* Nút gửi – FIX CHUẨN, không bị nhảy ra trái */
+  .chat-input button[type="submit"] {
+    width: 42px !important;
+    height: 42px !important;
+    margin-left: 8px !important;
+    flex-shrink: 0;
   }
 }

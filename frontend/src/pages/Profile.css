@@ -47,7 +47,7 @@
   width: 200%;
   height: 200%;
   background: radial-gradient(circle, rgba(255, 200, 220, 0.3) 0%, transparent 70%);
-  animation: rotateGlow 15s linear infinite;
+  /* animation: rotateGlow 15s linear infinite; */
   pointer-events: none;
 }
 
@@ -982,3 +982,88 @@
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* ====== PRESET INTERESTS (Ô chọn sở thích mẫu) ====== */
+
+.preset-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 5px 0;
+}
+
+.preset-interests span {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 22px;
+  background: #ffe6ed;
+  color: #ff4b7d;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.25s ease;
+}
+
+.preset-interests span:hover {
+  background: #ff4b7d;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 75, 125, 0.25);
+}
+
+/* Khi đang active (đã chọn) */
+.preset-interests span.active {
+  background: linear-gradient(135deg, #ff4b7d, #ff7fa4);
+  color: white;
+  border-color: #ff4b7d;
+  box-shadow: 0 6px 18px rgba(255, 75, 125, 0.3);
+}
+
+
+/* ====== SELECTED INTERESTS (Sở thích đã chọn bên dưới) ====== */
+
+.selected-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.selected-interests span {
+  background: linear-gradient(135deg, #ff4b7d, #ff7fa4);
+  padding: 8px 16px;
+  color: white;
+  font-weight: 600;
+  border-radius: 22px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  animation: popIn 0.3s ease;
+}
+
+.selected-interests .remove-interest {
+  border: none;
+  background: rgba(255, 255, 255, 0.25);
+  width: 20px;
+  height: 20px;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.25s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected-interests .remove-interest:hover {
+  background: rgba(255, 255, 255, 0.45);
+  transform: rotate(90deg);
+}
+
+/* Animation thêm mới */
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+

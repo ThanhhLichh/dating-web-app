@@ -5,6 +5,8 @@ import Profile from "./pages/Profile.jsx";
 import Notifications from "./pages/Notifications.jsx";
 import Messages from "./pages/Messages.jsx"; // ✅ Thêm dòng này
 import ProtectedRoute from "./components/ProtectedRoute";
+import About from "./pages/About.jsx";
+
 
 export default function App() {
   return (
@@ -47,6 +49,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+       <Route path="/about" element={<About />} />
     </Routes>
   );
 }
