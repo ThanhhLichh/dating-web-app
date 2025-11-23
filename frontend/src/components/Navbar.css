@@ -351,3 +351,19 @@
     height: 28px;
   }
 }
+
+.dot-badge {
+  width: 10px;
+  height: 10px;
+  background: #ff3b3b;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 6px;
+  box-shadow: 0 0 6px rgba(255, 60, 60, 0.8);
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

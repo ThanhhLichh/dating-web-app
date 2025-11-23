@@ -1,0 +1,41 @@
+/* 🌸 NỀN MỜ TRẮNG HỒNG */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 240, 245, 0.95);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.page-loader.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ❤️ HEART LOADING – pulse + glow + mềm mượt */
+.heart-loader {
+  width: 80px;
+  height: 80px;
+  animation: heartbeat 1.2s ease infinite;
+  filter: drop-shadow(0 0 15px #ff6fa8);
+}
+
+/* ❤️ SVG trái tim tự động tô màu */
+.heart-loader svg path {
+  fill: #ff3d7c;
+}
+
+/* Animation nhịp tim */
+@keyframes heartbeat {
+  0%   { transform: scale(0.95); }
+  25%  { transform: scale(1.1); }
+  40%  { transform: scale(0.95); }
+  60%  { transform: scale(1.05); }
+  100% { transform: scale(0.95); }
+}
