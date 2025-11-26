@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+/* Thay đổi nguồn import font: Lấy Inter và Plus Jakarta Sans */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 /* 🌸 Tổng thể */
 .home-page {
@@ -6,7 +7,8 @@
   min-height: 100vh;
   color: #333;
   padding-bottom: 60px;
-  font-family: "Poppins", sans-serif;
+  /* Đổi font chính thành Inter */
+  font-family: "Inter", sans-serif;
   position: relative;
   overflow-x: hidden;
 }
@@ -71,10 +73,13 @@
 }
 
 .hero-content h1 {
-  font-size: 2.8rem;
+  /* Tiêu đề lớn dùng Plus Jakarta Sans */
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 3rem; /* Tăng nhẹ kích thước */
   font-weight: 800;
   color: #fff;
   margin-bottom: 15px;
+  letter-spacing: -1px; /* Khoảng cách chữ hẹp cho hiện đại */
   text-shadow: 
     0 4px 15px rgba(0, 0, 0, 0.3),
     0 0 30px rgba(255, 255, 255, 0.5);
@@ -123,6 +128,8 @@
 
 .btn-start,
 .btn-learn {
+  /* Font nút bấm */
+  font-family: "Plus Jakarta Sans", sans-serif;
   border: none;
   padding: 14px 32px;
   border-radius: 30px;
@@ -214,11 +221,14 @@
 }
 
 .filter-panel h3 {
+  /* Tiêu đề bộ lọc */
+  font-family: "Plus Jakarta Sans", sans-serif;
   text-align: center;
   margin-bottom: 25px;
   color: #ff4b7d;
   font-weight: 700;
   font-size: 1.4rem;
+  letter-spacing: -0.5px;
   text-shadow: 0 2px 10px rgba(255, 75, 125, 0.3);
   position: relative;
   z-index: 1;
@@ -246,6 +256,7 @@
 
 .filter-panel input,
 .filter-panel select {
+  font-family: "Inter", sans-serif; /* Font input dễ đọc */
   width: 100%;
   padding: 12px 15px;
   margin-top: 8px;
@@ -274,6 +285,8 @@
 }
 
 .btn-apply {
+  /* Font nút áp dụng */
+  font-family: "Plus Jakarta Sans", sans-serif;
   width: 100%;
   padding: 14px;
   background: linear-gradient(135deg, #ff4b7d 0%, #ff7fa4 100%);
@@ -344,9 +357,12 @@
 }
 
 .recommend-header h3 {
+  /* Tiêu đề gợi ý */
+  font-family: "Plus Jakarta Sans", sans-serif;
   color: #ff4b7d;
   font-size: 1.4rem;
   font-weight: 700;
+  letter-spacing: -0.3px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -413,7 +429,10 @@
 }
 
 .user-info h2 {
-  font-size: 1.6rem;
+  /* Tên người dùng */
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: -0.5px;
   color: #333;
   margin-bottom: 8px;
   font-weight: 700;
@@ -454,6 +473,8 @@
 }
 
 .actions button {
+  /* Font nút chức năng */
+  font-family: "Plus Jakarta Sans", sans-serif;
   border: none;
   padding: 12px 24px;
   border-radius: 25px;
@@ -593,6 +614,14 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
+/* Thêm font cho tiêu đề modal */
+.modal-title,
+.modal-content h2 {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
 .modal-sub {
   text-align: center;
   font-size: 1.05rem;
@@ -613,6 +642,7 @@
 }
 
 .modal-interests h4 {
+  font-family: "Plus Jakarta Sans", sans-serif;
   text-align: center;
   margin-bottom: 15px;
   color: #ff4b7d;
@@ -645,6 +675,10 @@
 
 .modal-photos {
   margin-top: 30px;
+}
+
+.modal-photos h4 {
+    font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .photo-grid {

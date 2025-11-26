@@ -1,10 +1,13 @@
+/* IMPORT FONT INTER */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
 .auth-container {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #ff416c, #ff4b2b);
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* FORM BOX RESPONSIVE */
@@ -14,59 +17,75 @@
   padding: 40px 50px;
   border-radius: 20px;
   width: 90%;
-  max-width: 400px; /* quan trọng: giữ form không quá to */
+  max-width: 400px;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .form-box h2 {
   margin-bottom: 20px;
+  font-weight: 600;
 }
 
 .form-box input,
 .form-box select {
   width: 100%;
   margin: 10px 0;
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.25s;
+}
+
+.form-box input:focus,
+.form-box select:focus {
+  border-color: #ff416c;
 }
 
 .form-box button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: none;
   background: #ff416c;
   color: #fff;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
   transition: 0.3s;
 }
 
 .form-box button:hover {
   background: #ff4b2b;
+  transform: translateY(-2px);
 }
 
 .toggle {
   color: #ff416c;
   cursor: pointer;
   font-weight: 600;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
 /* MOBILE OPTIMIZATION */
 @media (max-width: 480px) {
   .form-box {
-    padding: 20px 25px; /* thu nhỏ padding cho vừa màn hình */
+    padding: 25px 20px;
     border-radius: 15px;
   }
 
   .form-box input,
-  .form-box select {
-    padding: 8px;
+  .form-box select,
+  .form-box button {
+    padding: 10px;
+    font-size: 14px;
   }
 
-  .form-box button {
-    padding: 9px;
+  .form-box h2 {
+    font-size: 20px;
   }
 }
 

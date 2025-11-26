@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+/* Thay đổi nguồn import font: Lấy Inter và Plus Jakarta Sans */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 /* 💬 Tổng thể */
 .messages-page {
@@ -7,6 +8,7 @@
   align-items: center;
   min-height: calc(100vh - 70px);
   background: linear-gradient(135deg, #ffeaf2 0%, #fff5f9 50%, #ffe6f0 100%);
+  /* Font chính toàn trang là Inter */
   font-family: "Inter", sans-serif;
   padding: 25px 20px;
   position: relative;
@@ -72,7 +74,10 @@
   align-items: center;
   gap: 12px;
   color: #e91e63;
-  font-weight: 700;
+  /* Font tiêu đề Sidebar */
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.5px;
   font-size: 1.4rem;
   margin-bottom: 20px;
   animation: fadeInDown 0.6s ease;
@@ -124,7 +129,8 @@
   outline: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95rem;
-  font-family: "Inter", sans-serif;
+  /* Font input giữ Inter cho dễ đọc */
+  font-family: "Inter", sans-serif; 
 }
 
 .match-search:focus {
@@ -228,6 +234,8 @@
 
 .match-info h4 {
   margin: 0 0 4px 0;
+  /* Font tên người dùng trong danh sách */
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-weight: 700;
   color: #333;
   font-size: 1.05rem;
@@ -240,6 +248,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 500;
 }
 
 /* === CHAT SECTION === */
@@ -293,8 +302,11 @@
 .chat-info h3 {
   margin: 0;
   color: #e91e63;
+  /* Font tên người đang chat */
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.3px;
 }
 
 .chat-info span {
@@ -302,6 +314,7 @@
   font-size: 0.9rem;
   display: block;
   margin-top: 3px;
+  font-weight: 500;
 }
 
 /* Call Buttons */
@@ -387,6 +400,8 @@
   word-wrap: break-word;
   animation: bubbleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  /* Font tin nhắn là Inter */
+  font-family: "Inter", sans-serif;
 }
 
 @keyframes bubbleIn {
@@ -417,6 +432,7 @@
   margin-top: 6px;
   text-align: right;
   opacity: 0.8;
+  font-weight: 500;
 }
 
 .chat-bubble.other .time {
@@ -519,6 +535,8 @@
 }
 
 .call-title {
+  /* Font thông báo hệ thống */
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: #444;
@@ -556,6 +574,7 @@
   outline: none;
   transition: all 0.3s ease;
   font-size: 0.98rem;
+  /* Font nhập liệu là Inter */
   font-family: "Inter", sans-serif;
 }
 
@@ -609,6 +628,12 @@
   margin: auto;
   color: #e91e63;
   padding: 40px;
+}
+
+.empty-chat h2 {
+  /* Font tiêu đề trang trống */
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;
 }
 
 .empty-chat .heart-icon {

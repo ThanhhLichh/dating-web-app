@@ -1,19 +1,29 @@
+/* Thay đổi nguồn import font: Lấy Inter và Plus Jakarta Sans */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
 .notifications-page {
   padding: 100px 20px 60px;
   background: #fff6f8;
   min-height: 100vh;
   text-align: center;
   color: #333;
+  /* Font chính là Inter */
+  font-family: "Inter", sans-serif;
 }
 
 .notifications-page h1 {
+  /* Tiêu đề trang */
+  font-family: "Plus Jakarta Sans", sans-serif;
   color: #ff4b7d;
   margin-bottom: 30px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .no-notif {
   font-size: 1.1rem;
   color: #888;
+  font-weight: 500;
 }
 
 .notif-list {
@@ -68,6 +78,14 @@
   font-size: 1rem;
   color: #333;
   margin: 0;
+  line-height: 1.5;
+}
+
+/* Làm đậm tên người dùng trong thông báo */
+.notif-content strong {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;
+  color: #333;
 }
 
 .notif-time {
@@ -75,6 +93,7 @@
   font-size: 0.85rem;
   color: #999;
   margin-top: 5px;
+  font-weight: 500;
 }
 
 .notif-actions {
@@ -85,12 +104,14 @@
 }
 
 .notif-actions button {
+  /* Font nút bấm hành động */
+  font-family: "Plus Jakarta Sans", sans-serif;
   border: none;
   background: #ffeaf0;
   color: #ff4b7d;
   border-radius: 8px;
   padding: 8px 14px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
   transition: 0.25s;
@@ -125,4 +146,5 @@
 .loading {
   color: #999;
   margin-top: 20px;
+  font-weight: 500;
 }
