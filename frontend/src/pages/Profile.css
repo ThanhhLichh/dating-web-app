@@ -1,7 +1,8 @@
 /* ==========================================================================
    1. IMPORTS & FONTS
    ========================================================================== */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+/* Thay đổi nguồn import font: Lấy Inter và Plus Jakarta Sans */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 /* ==========================================================================
    2. GLOBAL VARIABLES (ROOT)
@@ -50,10 +51,11 @@
    4. LAYOUT CONTAINER
    ========================================================================== */
 .profile-container {
-  max-width: 1200px; /* Tăng chiều rộng để 2 cột thoáng hơn */
+  max-width: 1200px;
   margin: 40px auto;
   padding: 30px;
-  font-family: "Poppins", sans-serif;
+  /* Font chính cho toàn trang là Inter (dễ đọc) */
+  font-family: "Inter", sans-serif;
   color: var(--text-dark);
   animation: fadeIn 0.6s ease;
   min-height: 80vh;
@@ -133,12 +135,15 @@
 }
 
 .info h2 {
+  /* Tên người dùng dùng Plus Jakarta Sans cho mạnh mẽ */
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2.2rem; 
   margin: 0 0 10px 0;
   background: linear-gradient(135deg, #ff4b2b, #ff7eb3);
   -webkit-background-clip: text; 
   -webkit-text-fill-color: transparent;
   font-weight: 800;
+  letter-spacing: -1px; /* Khoảng cách chữ hẹp hiện đại */
 }
 
 .meta-info { 
@@ -154,6 +159,7 @@
   display: flex; 
   align-items: center; 
   gap: 6px; 
+  font-weight: 500;
 }
 
 /* Utility Colors for Icons */
@@ -172,6 +178,7 @@
   font-weight: 600;
   margin-top: 10px; 
   border: 1px solid #c3e6cb;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .bio { 
@@ -187,11 +194,13 @@
 
 /* --- Edit Button --- */
 .btn-edit {
+  /* Font nút bấm */
+  font-family: "Plus Jakarta Sans", sans-serif;
   padding: 12px 24px; 
   border: none; 
   border-radius: 25px; 
   cursor: pointer; 
-  font-weight: 600;
+  font-weight: 700;
   
   display: flex; 
   align-items: center; 
@@ -202,6 +211,7 @@
   color: white; 
   box-shadow: 0 5px 15px rgba(255, 75, 125, 0.3);
   transition: 0.3s; 
+  letter-spacing: 0.3px;
 }
 
 .btn-edit:hover { 
@@ -214,7 +224,7 @@
    ========================================================================== */
 .profile-content-grid {
   display: grid;
-  grid-template-columns: 1fr 1.2fr; /* Cột phải (ảnh) rộng hơn cột trái 1 chút */
+  grid-template-columns: 1fr 1.2fr;
   gap: 30px;
   align-items: start;
 }
@@ -242,16 +252,20 @@
   box-shadow: var(--shadow-lg); 
   border: var(--glass-border);
   animation: slideInUp 0.6s ease;
-  height: 100%; /* Để cột phải căng đều */
+  height: 100%;
 }
 
 .profile-section h3 {
+  /* Tiêu đề section */
+  font-family: "Plus Jakarta Sans", sans-serif;
   color: var(--primary); 
   margin: 0 0 20px 0; 
   display: flex; 
   align-items: center; 
   gap: 10px; 
   font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 /* --- Grid Info --- */
@@ -276,6 +290,7 @@
 .grid-item strong { 
   color: var(--text-gray); 
   font-size: 0.9rem; 
+  font-weight: 600;
 }
 
 .grid-item span { 
@@ -296,6 +311,8 @@
 }
 
 .tag {
+  /* Font cho thẻ tag */
+  font-family: "Plus Jakarta Sans", sans-serif;
   background: #fff0f5; 
   color: var(--primary); 
   padding: 8px 16px;
@@ -365,13 +382,15 @@
 }
 
 .photo-btn {
+  /* Font nút trong ảnh */
+  font-family: "Plus Jakarta Sans", sans-serif;
   background: white; 
   border: none; 
   padding: 6px 12px; 
   border-radius: 15px;
   
   font-size: 0.8rem; 
-  font-weight: 600; 
+  font-weight: 700; 
   cursor: pointer; 
   
   display: flex; 
@@ -385,6 +404,8 @@
 
 /* --- Add Photo Button --- */
 .add-photo {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
   border: 2px dashed var(--primary); 
   border-radius: 15px;
   
@@ -392,6 +413,7 @@
   flex-direction: column; 
   align-items: center; 
   justify-content: center;
+  gap: 5px;
   
   color: var(--primary); 
   cursor: pointer; 
@@ -422,6 +444,8 @@
 }
 
 .btn-setting {
+  /* Font nút cài đặt */
+  font-family: "Plus Jakarta Sans", sans-serif;
   background: white; 
   border: 1px solid #eee; 
   padding: 12px 20px; 
@@ -487,10 +511,12 @@
 }
 
 .modal-box h3 { 
+  font-family: "Plus Jakarta Sans", sans-serif;
   text-align: center; 
   color: var(--primary); 
   margin-bottom: 20px; 
   font-size: 1.5rem; 
+  font-weight: 700;
 }
 
 /* --- Form Fields --- */
@@ -501,12 +527,14 @@
 .form-input, 
 .form-select, 
 .form-textarea {
+  /* Font input dùng Inter cho dễ đọc */
+  font-family: "Inter", sans-serif;
   width: 100%; 
   padding: 12px 15px; 
   border-radius: 12px; 
   border: 1px solid #ddd;
   
-  font-family: inherit; 
+  font-size: 0.95rem;
   margin-bottom: 10px; 
   background: #fdfdfd;
   transition: 0.3s; 
@@ -516,6 +544,7 @@
   border-color: var(--primary); 
   outline: none; 
   box-shadow: 0 0 0 3px rgba(255, 75, 125, 0.1); 
+  background: #fff;
 }
 
 /* --- Modal Actions --- */
@@ -526,6 +555,7 @@
 }
 
 .btn-confirm { 
+  font-family: "Plus Jakarta Sans", sans-serif;
   flex: 1; 
   background: var(--primary-gradient); 
   color: white; 
@@ -533,7 +563,7 @@
   
   border: none; 
   border-radius: 15px; 
-  font-weight: bold; 
+  font-weight: 700; 
   cursor: pointer; 
 }
 
@@ -543,6 +573,7 @@
 }
 
 .btn-cancel { 
+  font-family: "Plus Jakarta Sans", sans-serif;
   flex: 1; 
   background: #eee; 
   color: #555; 
@@ -550,7 +581,7 @@
   
   border: none; 
   border-radius: 15px; 
-  font-weight: bold; 
+  font-weight: 700; 
   cursor: pointer; 
 }
 
@@ -558,6 +589,7 @@
    11. EDIT INTERESTS LOGIC
    ========================================================================== */
 .preset-tags span {
+  font-family: "Inter", sans-serif;
   display: inline-block; 
   padding: 6px 12px; 
   background: #eee; 
@@ -567,6 +599,7 @@
   cursor: pointer; 
   font-size: 0.85rem; 
   transition: 0.2s;
+  font-weight: 500;
 }
 
 .preset-tags span.active { 
@@ -591,6 +624,7 @@
   display: flex; 
   align-items: center; 
   gap: 5px; 
+  font-weight: 600;
 }
 
 .remove-tag { 
@@ -627,6 +661,7 @@
 }
 
 .btn-xs { 
+  font-family: "Plus Jakarta Sans", sans-serif;
   padding: 5px 10px; 
   border-radius: 8px; 
   border: none; 

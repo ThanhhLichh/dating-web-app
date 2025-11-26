@@ -1,8 +1,12 @@
+/* Thay đổi nguồn import font: Lấy Inter và Plus Jakarta Sans */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
 .about-container {
   width: 100%;
   max-width: 1000px;
   margin: 100px auto 40px auto;
   padding: 0 20px;
+  /* Font chính là Inter */
   font-family: "Inter", sans-serif;
   animation: fadeIn 0.6s ease;
 }
@@ -19,9 +23,12 @@
 }
 
 .about-hero h1 {
+  /* Tiêu đề lớn dùng Plus Jakarta Sans */
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2.6rem;
   font-weight: 800;
   color: #e91e63;
+  letter-spacing: -1px; /* Khoảng cách chữ hẹp hiện đại */
 }
 
 .about-hero p {
@@ -29,6 +36,7 @@
   color: #444;
   max-width: 700px;
   margin: 15px auto;
+  line-height: 1.7;
 }
 
 /* SECTIONS */
@@ -42,9 +50,13 @@
 }
 
 .about-section h2 {
+  /* Tiêu đề section */
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.6rem;
+  font-weight: 700;
   color: #e91e63;
   margin-bottom: 12px;
+  letter-spacing: -0.5px;
 }
 
 .about-section p {
@@ -61,7 +73,8 @@
 .about-section ul li {
   font-size: 1.05rem;
   color: #444;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 /* CONTACT */
@@ -71,22 +84,27 @@
 }
 
 .about-contact h2 {
+  font-family: "Plus Jakarta Sans", sans-serif;
   color: #e91e63;
   font-size: 1.6rem;
   margin-bottom: 12px;
+  font-weight: 700;
 }
 
 .contact-btn {
+  /* Font nút bấm */
+  font-family: "Plus Jakarta Sans", sans-serif;
   display: inline-block;
   padding: 14px 28px;
   background: linear-gradient(135deg, #ff4b7d, #ff7fa4);
   color: white;
   font-size: 1.05rem;
   border-radius: 25px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: 0 6px 20px rgba(255, 80, 120, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .contact-btn:hover {
@@ -106,6 +124,8 @@
 .simple-footer strong {
   margin-left: 5px;
   color: #e91e63;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;
 }
 
 /* RESPONSIVE */
@@ -122,8 +142,11 @@
     padding: 20px;
   }
 }
+
 .btn-primary {
   text-decoration: none !important;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
 }
 
 a {

@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+/* 1. Thay đổi nguồn import font: Lấy Inter và Plus Jakarta Sans */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap');
 
 /* ==== RESET ==== */
 * {
@@ -8,7 +9,8 @@
 }
 
 body {
-  font-family: "Poppins", sans-serif;
+  /* 2. Đổi font chính thành Inter */
+  font-family: "Inter", sans-serif;
   background: linear-gradient(180deg, #fff7f7 0%, #ffeaea 100%);
   color: #222;
   overflow-x: hidden;
@@ -49,6 +51,8 @@ body {
 }
 
 .brand span {
+  /* 3. Tiêu đề thương hiệu dùng Plus Jakarta Sans */
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 21px;
   font-weight: 700;
   background: linear-gradient(90deg, #ff4b2b, #ff7eb3);
@@ -83,6 +87,8 @@ body {
 /* ==== BUTTONS ==== */
 .btn-primary,
 .btn-outline {
+  /* 4. Nút bấm dùng Plus Jakarta Sans */
+  font-family: "Plus Jakarta Sans", sans-serif;
   padding: 11px 28px;
   font-size: 15px;
   border-radius: 10px;
@@ -131,6 +137,8 @@ body {
 }
 
 .left h1 {
+  /* 5. Tiêu đề lớn dùng Plus Jakarta Sans */
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 48px;
   font-weight: 700;
   line-height: 1.3;
@@ -236,6 +244,8 @@ body {
 }
 
 .modal h2 {
+  /* 6. Tiêu đề Modal dùng Plus Jakarta Sans */
+  font-family: "Plus Jakarta Sans", sans-serif;
   text-align: center;
   color: #ff4b2b;
   margin-bottom: 22px;
@@ -264,6 +274,8 @@ body {
 }
 
 .btn-submit {
+  /* 7. Nút submit dùng Plus Jakarta Sans */
+  font-family: "Plus Jakarta Sans", sans-serif;
   padding: 12px;
   margin-top: 10px;
   background: linear-gradient(135deg, #ff758c, #ff7eb3);
@@ -342,6 +354,8 @@ body {
 }
 
 .simple-footer strong {
+  /* 8. Text đậm ở footer */
+  font-family: "Plus Jakarta Sans", sans-serif;
   color: #ff4b2b;
   font-weight: 600;
   margin-left: 6px;
