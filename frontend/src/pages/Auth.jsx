@@ -6,6 +6,8 @@ import logo from "../assets/logo.svg";
 import img1 from "../assets/sig4.webp";
 import img2 from "../assets/sig2.webp";
 import img3 from "../assets/sig1.webp";
+import toast from "react-hot-toast";
+
 
 
 
@@ -95,31 +97,48 @@ const handlePrev = () => {
 
   const handleSubmit = async (e) => {
   e.preventDefault();
+
   try {
     if (isLogin) {
-      const res = await login({ email: form.email, password: form.password });
-      
-      // ✅ Sửa tại đây — backend trả về access_token chứ không phải token
-      if (res?.access_token) {
-        localStorage.setItem("token", res.access_token); // Lưu token
-        alert("Đăng nhập thành công!");
-        navigate("/home"); // Điều hướng sang trang Home
-      } else {
-        alert("Không nhận được token từ server!");
+      const res = await login({
+        email: form.email,
+        password: form.password,
+      });
+
+      // ❌ Chặn admin đăng nhập tại trang user
+      if (res?.is_admin === true) {
+        toast.error("Tài khoản Admin không thể đăng nhập tại đây!");
+        return;
       }
 
+      // 🟢 Đăng nhập User
+      if (res?.access_token) {
+        localStorage.setItem("token", res.access_token);
+        toast.success("Đăng nhập thành công!");
+        navigate("/home");
+      } else {
+        toast.error("Không nhận được token từ máy chủ!");
+      }
     } else {
+      // 🟢 Đăng ký
       await register(form);
-      alert("Đăng ký thành công! Hãy đăng nhập.");
+      toast.success("Đăng ký thành công! Hãy đăng nhập.");
       setIsLogin(true);
     }
 
     setShowModal(false);
+
   } catch (err) {
     console.error(err);
-    alert("Có lỗi xảy ra!");
+
+    const msg =
+      err?.response?.data?.detail ||
+      "Sai email hoặc mật khẩu!";
+
+    toast.error(msg);
   }
 };
+
 
 
   return (

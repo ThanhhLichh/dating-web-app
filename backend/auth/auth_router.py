@@ -25,15 +25,27 @@ def login_user(request: LoginRequest, db: Session = Depends(get_db)):
     if not verify_password(request.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không đúng")
 
-    # ✅ Cập nhật trạng thái online
+    # ❌ CHẶN ADMIN LOGIN TẠI ROUTE NÀY
+    if user.is_admin == 1:
+        raise HTTPException(
+            status_code=403,
+            detail="Tài khoản Admin không được đăng nhập ở đây. Vui lòng truy cập /admin/login"
+        )
+
+    # Cập nhật trạng thái online
     db.execute(
         text("UPDATE users SET is_online = 1 WHERE user_id = :uid"),
         {"uid": user.user_id},
     )
     db.commit()
 
+    # Trả token user
     access_token = create_access_token({"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
 
 
 # ==========================================
@@ -72,6 +84,35 @@ def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return {"message": "✅ Đăng ký thành công", "user_id": new_user.user_id}
+
+
+# ==========================================
+# 🔐 ADMIN LOGIN (route riêng cho Admin)
+# ==========================================
+@router.post("/admin/login", response_model=TokenResponse)
+def admin_login(request: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Email hoặc mật khẩu không đúng")
+
+    if not verify_password(request.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Email hoặc mật khẩu không đúng")
+
+    # ❗ Chỉ admin mới được login
+    if user.is_admin != 1:
+        raise HTTPException(status_code=403, detail="Bạn không có quyền Admin")
+
+    # Tạo token admin
+    access_token = create_access_token({"sub": user.email, "role": "admin"})
+
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/admin/me")
+def admin_me(current_user: User = Depends(get_current_user)):
+    if current_user.is_admin != 1:
+        raise HTTPException(status_code=403, detail="Bạn không phải Admin")
+    return current_user
 
 
 # ==========================================

@@ -1,0 +1,167 @@
+/* ===============================
+   PAGE TITLE
+=============================== */
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 30px;
+  font-weight: 800;
+  margin-bottom: 25px;
+  color: #111827;
+}
+
+/* ===============================
+   STAT CARDS
+=============================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 22px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: white;
+  padding: 22px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  transition: all 0.25s ease;
+  border-left: 6px solid transparent;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+}
+
+.stat-title {
+  font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 5px;
+}
+
+.stat-number {
+  font-size: 34px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.stat-icon {
+  font-size: 46px;
+  opacity: 0.9;
+}
+
+/* Card Colors */
+.sc1 { border-left-color: #6366f1; }
+.sc2 { border-left-color: #10b981; }
+.sc3 { border-left-color: #ef4444; }
+.sc4 { border-left-color: #ec4899; }
+
+/* Icon Colors */
+.sc1 .stat-icon { color: #6366f1; }
+.sc2 .stat-icon { color: #10b981; }
+.sc3 .stat-icon { color: #ef4444; }
+.sc4 .stat-icon { color: #ec4899; }
+
+/* ===============================
+   CHARTS
+=============================== */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.chart-box {
+  padding: 25px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-icon {
+  font-size: 20px;
+  opacity: 0.7;
+}
+
+/* ===============================
+   TOP 10 USERS
+=============================== */
+/* ===============================
+   TOP 10 USERS – NEAT & COMPACT
+=============================== */
+.top-users {
+  margin-top: 20px;
+  max-width: 650px;          /* 👈 bảng không bị dài toàn màn */
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;         /* 👈 căn giữa */
+}
+
+.top-users .chart-box {
+  padding: 20px 25px;
+  border-radius: 18px;
+}
+
+/* Table layout */
+.top-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.top-table th,
+.top-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef0f3;
+  font-size: 15px;
+}
+
+/* Header */
+.top-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+}
+
+/* Cột Top (#) */
+.top-table th:nth-child(1),
+.top-table td:nth-child(1) {
+  width: 60px;
+  text-align: center;
+}
+
+/* Cột Số tin nhắn */
+.top-table th:nth-child(3),
+.top-table td:nth-child(3) {
+  width: 120px;
+  text-align: center;
+}
+
+/* Hover effect */
+.top-table tbody tr:hover td {
+  background: #f3f4f6;
+}
+
+/* Empty row */
+.empty-row {
+  padding: 20px;
+  text-align: center !important;
+  color: #6b7280;
+}

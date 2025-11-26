@@ -22,5 +22,10 @@ class User(Base):
     bio = Column(Text)
     height = Column(String(10))
     is_online = Column(Boolean, default=False)
+
+    # ⭐️ Thêm 2 trường quản trị
+    is_admin = Column(Boolean, default=False)
+    is_banned = Column(Boolean, default=False)
+    
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

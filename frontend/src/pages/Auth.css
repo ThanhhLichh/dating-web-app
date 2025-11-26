@@ -41,6 +41,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-bottom: 0px !important;
 }
 
 .brand img {
@@ -336,6 +337,7 @@ body {
   text-align: center;
   padding: 24px 10px;
   font-size: 15px;
+  margin-top: 0px !important; 
   color: #555;
   background: linear-gradient(180deg, #fff0f0 0%, #ffe5e5 100%);
   border-top: 1px solid rgba(255, 150, 150, 0.3);
@@ -691,4 +693,11 @@ body {
   .left p {
     font-size: 12px;
   }
+}
+
+/* ==== FIX TOAST BỊ CHÌM ==== */
+/* ⭐ TOAST ALWAYS ON TOP */
+.react-hot-toast {
+  z-index: 2147483647 !important;
+  position: fixed !important;
 }

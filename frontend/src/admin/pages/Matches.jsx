@@ -1,0 +1,81 @@
+import { useEffect, useState } from "react";
+import adminApi from "../../services/adminApi";
+import AdminLayout from "../layout/AdminLayout";
+import toast from "react-hot-toast";
+import "./Admin.css";
+
+export default function Matches() {
+  const [matches, setMatches] = useState([]);
+
+  useEffect(() => {
+    loadMatches();
+  }, []);
+
+  const loadMatches = async () => {
+    try {
+      const res = await adminApi.get("/admin/matches");
+      setMatches(res.data);
+    } catch (err) {
+      toast.error("Không thể tải danh sách match!");
+    }
+  };
+
+  const deleteMatch = async (id) => {
+    if (!window.confirm("Bạn chắc chắn muốn xóa Match này?")) return;
+
+    try {
+      await adminApi.delete(`/admin/matches/${id}`);
+      toast.success("Đã xóa Match!");
+
+      // Cập nhật UI
+      setMatches((prev) => prev.filter((m) => m.match_id !== id));
+    } catch (err) {
+      toast.error("Không thể xóa Match!");
+    }
+  };
+
+  return (
+    <AdminLayout>
+      <h1 className="admin-title">💞 Matches</h1>
+
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User 1</th>
+            <th>User 2</th>
+            <th>Ngày</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {matches.map((m) => (
+            <tr key={m.match_id}>
+              <td>{m.match_id}</td>
+              <td>{m.user1_name}</td>
+              <td>{m.user2_name}</td>
+              <td>{m.created_at}</td>
+              <td>
+                <button
+                  className="delete-btn"
+                  onClick={() => deleteMatch(m.match_id)}
+                >
+                  Xóa
+                </button>
+              </td>
+            </tr>
+          ))}
+
+          {matches.length === 0 && (
+            <tr>
+              <td colSpan="5" className="empty">
+                Không có match nào
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </AdminLayout>
+  );
+}

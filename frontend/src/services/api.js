@@ -26,16 +26,19 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Xóa token cũ
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
 
-      // Hiển thị cảnh báo (có thể thay bằng SweetAlert2 hoặc toastify)
-      alert("⚠️ Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
-
-      // Chuyển về trang đăng nhập
-      window.location.href = "/";
+    // Nếu lỗi từ login hoặc register thì ĐỪNG xử lý ở đây
+    if (error.config.url.includes("/auth/login") || 
+        error.config.url.includes("/auth/register")) {
+      return Promise.reject(error); 
     }
+
+    // Nếu user không phải lỗi login → token hết hạn
+    localStorage.removeItem("token");
+    alert("⚠️ Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+    window.location.href = "/";
+}
+
     return Promise.reject(error);
   }
 );

@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine
+
+
 # Import các router
 from routers import (
     user_router, 
@@ -11,6 +13,8 @@ from routers import (
     message_router,
     
 )
+
+from routers import admin_router
 from auth import auth_router
 from fastapi.staticfiles import StaticFiles
 from websocket import message_ws, call_ws
@@ -39,7 +43,7 @@ app.include_router(home_router.router)
 app.include_router(notification_router.router)
 app.include_router(match_router.router)
 app.include_router(message_router.router)
-
+app.include_router(admin_router.router)
 
 # ✅ WebSocket Routers
 app.include_router(message_ws.router)

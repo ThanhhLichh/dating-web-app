@@ -1,0 +1,50 @@
+.admin-messages-page {
+  padding: 20px;
+}
+
+.msg-input-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.msg-input-box input {
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 200px;
+}
+
+.msg-input-box button {
+  padding: 10px 15px;
+  background: #5561ff;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.msg-input-box button:disabled {
+  background: #8c92ff;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #d93636;
+}
+
+.empty {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+}

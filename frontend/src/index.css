@@ -69,3 +69,9 @@
     padding: 9px;
   }
 }
+
+/* FORCE TOAST ABOVE ALL EXTENSIONS / POPUPS */
+[data-rht-toaster] {
+  z-index: 2147483647 !important;
+}
+

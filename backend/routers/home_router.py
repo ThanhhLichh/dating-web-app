@@ -35,6 +35,7 @@ def get_recommendations(
 
     where_clauses = [
         "u.user_id != :uid",
+        "u.is_admin = 0", 
         "u.user_id NOT IN (SELECT to_user_id FROM likes WHERE from_user_id = :uid)",
         "u.user_id NOT IN (SELECT target_user_id FROM skips WHERE user_id = :uid)",
         "u.birthday BETWEEN :min_birth AND :max_birth",
