@@ -9,7 +9,6 @@ export default function AdminMessages() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 🔍 Load messages theo match_id
   const fetchMessages = async () => {
     if (!matchId.trim()) {
       toast.error("Vui lòng nhập Match ID!");
@@ -26,14 +25,12 @@ export default function AdminMessages() {
         ? toast("Không có tin nhắn nào!")
         : toast.success("Tải dữ liệu thành công!");
     } catch (err) {
-      console.error(err);
       toast.error("Không thể tải tin nhắn!");
     }
 
     setLoading(false);
   };
 
-  // 🗑 Xoá 1 tin nhắn
   const deleteMessage = async (id) => {
     if (!window.confirm("Bạn chắc chắn muốn xóa tin nhắn này?")) return;
 
@@ -41,10 +38,8 @@ export default function AdminMessages() {
       await adminApi.delete(`/admin/messages/${id}`);
       toast.success("Đã xóa!");
 
-      // Cập nhật UI sau khi xóa
       setMessages((prev) => prev.filter((msg) => msg.message_id !== id));
     } catch (err) {
-      console.error(err);
       toast.error("Không thể xóa tin nhắn!");
     }
   };
@@ -66,46 +61,43 @@ export default function AdminMessages() {
           </button>
         </div>
 
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Người gửi</th>
-              <th>Người nhận</th>
-              <th>Nội dung</th>
-              <th>Thời gian</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {messages.map((m) => (
-              <tr key={m.message_id}>
-                <td>{m.message_id}</td>
-                <td>{m.sender_name}</td>
-                <td>{m.receiver_name}</td>
-                <td>{m.content}</td>
-                <td>{m.created_at}</td>
-                <td>
-                  <button 
-                    className="delete-btn"
-                    onClick={() => deleteMessage(m.message_id)}
-                  >
-                    Xóa
-                  </button>
-                </td>
-              </tr>
-            ))}
-
-            {messages.length === 0 && !loading && (
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
               <tr>
-                <td colSpan="6" className="empty">
-                  Không có tin nhắn nào
-                </td>
+                <th>ID</th>
+                <th>Người gửi</th>
+                <th>Người nhận</th>
+                <th>Nội dung</th>
+                <th>Thời gian</th>
+                <th>Hành động</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {messages.map((m) => (
+                <tr key={m.message_id}>
+                  <td>{m.message_id}</td>
+                  <td>{m.sender_name}</td>
+                  <td>{m.receiver_name}</td>
+                  <td>{m.content}</td>
+                  <td>{m.created_at}</td>
+                  <td>
+                    <button className="delete-btn" onClick={() => deleteMessage(m.message_id)}>
+                      Xóa
+                    </button>
+                  </td>
+                </tr>
+              ))}
+
+              {messages.length === 0 && !loading && (
+                <tr>
+                  <td colSpan="6" className="empty">Không có tin nhắn nào</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </AdminLayout>
   );

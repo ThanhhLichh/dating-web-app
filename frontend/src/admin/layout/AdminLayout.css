@@ -1,25 +1,11 @@
 /* =============================
-   ADMIN LAYOUT FIXED VERSION
+   ADMIN LAYOUT
 ============================= */
 
 .admin-layout {
   display: flex;
-  height: 100vh; /* Sidebar luôn full chiều cao màn */
+  height: 100vh;
   overflow: hidden;
-}
-
-/* SIDEBAR AREA */
-.admin-sidebar {
-  width: 260px;
-  background: #0f172a;
-  color: white;
-  flex-shrink: 0; /* Không cho sidebar bị co khi content dài */
-  height: 100%; /* Full */
-  display: flex;
-  flex-direction: column;
-  padding: 25px 20px;
-  position: sticky;
-  top: 0; /* Giữ sidebar cố định khi scroll */
 }
 
 /* MAIN AREA */
@@ -27,25 +13,26 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%; /* quan trọng */
+  height: 100%;
   background: #f1f5f9;
-}
-
-/* NAVBAR */
-.admin-navbar {
-  height: 70px;
-  padding: 0 25px;
-  background: white;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0; /* đừng cho navbar co lại */
 }
 
 /* CONTENT AREA */
 .admin-content {
-  flex: 1; /* Lấy toàn bộ phần còn lại */
-  overflow-y: auto; /* Scroll nội dung, không scroll sidebar */
+  flex: 1;
+  overflow-y: auto;
   padding: 25px;
+}
+
+/* =============================
+      RESPONSIVE MOBILE
+============================= */
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column; /* Sidebar tách khỏi layout */
+  }
+
+  .admin-content {
+    padding: 18px;
+  }
 }

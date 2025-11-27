@@ -92,17 +92,38 @@ def admin_stats(db: Session = Depends(get_db), user: User = Depends(get_current_
 # USERS LIST
 # ============================
 @router.get("/users")
-def admin_users(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def admin_users(
+    search: str = "",
+    db: Session = Depends(get_db), 
+    user: User = Depends(get_current_user)
+):
     require_admin(user)
 
-    sql = text("""
-        SELECT user_id, full_name, email, gender, is_banned, is_online, created_at
-        FROM users
-        ORDER BY user_id DESC
-    """)
-    data = db.execute(sql).fetchall()
+    # Nếu có search
+    if search:
+        sql = text("""
+            SELECT user_id, full_name, email, gender, is_banned, is_online, created_at
+            FROM users
+            WHERE is_admin = 0 
+              AND (full_name LIKE :kw OR email LIKE :kw)
+            ORDER BY user_id DESC
+        """)
+        data = db.execute(sql, {"kw": f"%{search}%"}).fetchall()
+
+    # Nếu không có search
+    else:
+        sql = text("""
+            SELECT user_id, full_name, email, gender, is_banned, is_online, created_at
+            FROM users
+            WHERE is_admin = 0
+            ORDER BY user_id DESC
+        """)
+        data = db.execute(sql).fetchall()
 
     return [dict(r._mapping) for r in data]
+
+
+
 
 
 # ============================
@@ -163,38 +184,44 @@ def top_message_users(db: Session = Depends(get_db), user: User = Depends(get_cu
 # MATCHES LIST
 # ============================
 @router.get("/matches")
-def admin_matches(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def admin_matches(
+    search: str = "",
+    db: Session = Depends(get_db), 
+    user: User = Depends(get_current_user)
+):
     require_admin(user)
 
-    sql = text("""
-        SELECT 
-            m.match_id,
-            m.created_at,
-            u1.full_name AS user1_name,
-            u2.full_name AS user2_name
-        FROM matches m
-        JOIN users u1 ON m.user1_id = u1.user_id
-        JOIN users u2 ON m.user2_id = u2.user_id
-        ORDER BY m.created_at DESC
-    """)
+    if search:
+        sql = text("""
+            SELECT 
+                m.match_id,
+                m.created_at,
+                u1.full_name AS user1_name,
+                u2.full_name AS user2_name
+            FROM matches m
+            JOIN users u1 ON m.user1_id = u1.user_id
+            JOIN users u2 ON m.user2_id = u2.user_id
+            WHERE u1.full_name LIKE :kw
+               OR u2.full_name LIKE :kw
+            ORDER BY m.created_at DESC
+        """)
+        data = db.execute(sql, {"kw": f"%{search}%"}).fetchall()
+    else:
+        sql = text("""
+            SELECT 
+                m.match_id,
+                m.created_at,
+                u1.full_name AS user1_name,
+                u2.full_name AS user2_name
+            FROM matches m
+            JOIN users u1 ON m.user1_id = u1.user_id
+            JOIN users u2 ON m.user2_id = u2.user_id
+            ORDER BY m.created_at DESC
+        """)
+        data = db.execute(sql).fetchall()
 
-    data = db.execute(sql).fetchall()
     return [dict(r._mapping) for r in data]
 
-@router.delete("/matches/{match_id}")
-def delete_match(match_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    require_admin(user)
-
-    result = db.execute(
-        text("DELETE FROM matches WHERE match_id = :id"),
-        {"id": match_id}
-    )
-    db.commit()
-
-    if result.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Match không tồn tại")
-
-    return {"message": "Đã xóa match"}
 
 
 

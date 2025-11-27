@@ -8,37 +8,42 @@ import {
 import "./AdminSidebar.css";
 import logo from "../../assets/logo.svg";
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ open, onClose }) {
   return (
-    <aside className="admin-sidebar">
-      <div className="brand">
-  <img src={logo} alt="LoveConnect logo" className="brand-logo" />
+    <>
+      <div
+        className={`sidebar-overlay ${open ? "show" : ""}`}
+        onClick={onClose}
+      ></div>
 
-  <div className="brand-text">
-    <span className="admin">Admin</span>
-    <span className="name">LoveConnect</span>
-  </div>
-</div>
+      <aside className={`admin-sidebar ${open ? "open" : ""}`}>
+        <div className="brand">
+          <img src={logo} alt="LoveConnect logo" className="brand-logo" />
 
+          <div className="brand-text">
+            <span className="admin">Admin</span>
+            <span className="name">LoveConnect</span>
+          </div>
+        </div>
 
+        <nav className="sidebar-nav">
+          <NavLink to="/admin/dashboard">
+            <MdDashboard /> Dashboard
+          </NavLink>
 
-      <nav className="sidebar-nav">
-        <NavLink to="/admin/dashboard">
-          <MdDashboard /> Dashboard
-        </NavLink>
+          <NavLink to="/admin/users">
+            <MdPeople /> Users
+          </NavLink>
 
-        <NavLink to="/admin/users">
-          <MdPeople /> Users
-        </NavLink>
+          <NavLink to="/admin/matches">
+            <MdFavorite /> Matches
+          </NavLink>
 
-        <NavLink to="/admin/matches">
-          <MdFavorite /> Matches
-        </NavLink>
-
-        <NavLink to="/admin/messages">
-          <MdMessage /> Messages
-        </NavLink>
-      </nav>
-    </aside>
+          <NavLink to="/admin/messages">
+            <MdMessage /> Messages
+          </NavLink>
+        </nav>
+      </aside>
+    </>
   );
 }

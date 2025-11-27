@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { MdLogout } from "react-icons/md";
+import { FaBars } from "react-icons/fa";
 import adminApi from "../../services/adminApi";
 import "./AdminNavbar.css";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminNavbar() {
+export default function AdminNavbar({ onToggleSidebar }) {
   const [admin, setAdmin] = useState(null);
   const navigate = useNavigate();
 
@@ -19,6 +20,10 @@ export default function AdminNavbar() {
 
   return (
     <header className="admin-navbar">
+      <button className="menu-btn" onClick={onToggleSidebar}>
+        <FaBars />
+      </button>
+
       <h2 className="navbar-title">Admin Dashboard</h2>
 
       <div className="admin-info">

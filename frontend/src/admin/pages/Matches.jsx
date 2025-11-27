@@ -6,19 +6,20 @@ import "./Admin.css";
 
 export default function Matches() {
   const [matches, setMatches] = useState([]);
-
-  useEffect(() => {
-    loadMatches();
-  }, []);
+  const [search, setSearch] = useState("");
 
   const loadMatches = async () => {
     try {
-      const res = await adminApi.get("/admin/matches");
+      const res = await adminApi.get(`/admin/matches?search=${search}`);
       setMatches(res.data);
     } catch (err) {
       toast.error("Không thể tải danh sách match!");
     }
   };
+
+  useEffect(() => {
+    loadMatches();
+  }, [search]); // gọi lại khi search thay đổi
 
   const deleteMatch = async (id) => {
     if (!window.confirm("Bạn chắc chắn muốn xóa Match này?")) return;
@@ -26,9 +27,7 @@ export default function Matches() {
     try {
       await adminApi.delete(`/admin/matches/${id}`);
       toast.success("Đã xóa Match!");
-
-      // Cập nhật UI
-      setMatches((prev) => prev.filter((m) => m.match_id !== id));
+      loadMatches();
     } catch (err) {
       toast.error("Không thể xóa Match!");
     }
@@ -38,44 +37,49 @@ export default function Matches() {
     <AdminLayout>
       <h1 className="admin-title">💞 Matches</h1>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>User 1</th>
-            <th>User 2</th>
-            <th>Ngày</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
+      {/* 🔍 Search matches */}
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="Tìm theo tên người dùng..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
-        <tbody>
-          {matches.map((m) => (
-            <tr key={m.match_id}>
-              <td>{m.match_id}</td>
-              <td>{m.user1_name}</td>
-              <td>{m.user2_name}</td>
-              <td>{m.created_at}</td>
-              <td>
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteMatch(m.match_id)}
-                >
-                  Xóa
-                </button>
-              </td>
-            </tr>
-          ))}
-
-          {matches.length === 0 && (
+      <div className="admin-table-wrapper">
+        <table className="admin-table">
+          <thead>
             <tr>
-              <td colSpan="5" className="empty">
-                Không có match nào
-              </td>
+              <th>ID</th>
+              <th>User 1</th>
+              <th>User 2</th>
+              <th>Ngày</th>
+              <th>Hành động</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {matches.map((m) => (
+              <tr key={m.match_id}>
+                <td>{m.match_id}</td>
+                <td>{m.user1_name}</td>
+                <td>{m.user2_name}</td>
+                <td>{m.created_at}</td>
+                <td>
+                  <button className="delete-btn" onClick={() => deleteMatch(m.match_id)}>Xóa</button>
+                </td>
+              </tr>
+            ))}
+
+            {matches.length === 0 && (
+              <tr>
+                <td colSpan="5" className="empty">Không tìm thấy match nào</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </AdminLayout>
   );
 }

@@ -87,3 +87,108 @@
 .delete-btn:hover {
   background: #d93636;
 }
+
+/* ====== GLOBAL THEME ====== */
+.admin-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #111827;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+/* ========== TABLE WRAPPER ========== */
+.admin-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* ====== TABLE ====== */
+.admin-table {
+  width: 100%;
+  min-width: 650px; /* tránh bị bóp khi mobile */
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.admin-table th, .admin-table td {
+  padding: 14px;
+  border-bottom: 1px solid #f3f4f6;
+  white-space: nowrap;
+}
+
+/* BUTTONS */
+.btn-ban, .btn-unban, .delete-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-ban {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-unban {
+  background: #10b981;
+  color: white;
+}
+
+.delete-btn {
+  background: #ff4d4d;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #d93636;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .admin-title {
+    font-size: 22px;
+  }
+
+  .admin-table th, .admin-table td {
+    padding: 10px;
+  }
+
+  .btn-ban, .btn-unban, .delete-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-title {
+    font-size: 20px;
+  }
+
+  .btn-ban, .btn-unban, .delete-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+.search-box {
+  margin-bottom: 15px;
+}
+
+.search-box input {
+  width: 280px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+

@@ -26,25 +26,19 @@
   border: none;
 }
 
-.msg-input-box button:disabled {
-  background: #8c92ff;
-}
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .msg-input-box {
+    flex-direction: column;
+    gap: 15px;
+  }
 
-.delete-btn {
-  padding: 6px 12px;
-  background: #ff4d4d;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+  .msg-input-box input {
+    width: 100%;
+  }
 
-.delete-btn:hover {
-  background: #d93636;
-}
-
-.empty {
-  text-align: center;
-  font-style: italic;
-  color: #666;
+  .msg-input-box button {
+    width: 100%;
+    padding: 12px;
+  }
 }
