@@ -1,13 +1,14 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from database import get_db
 from sqlalchemy.orm import Session
+from database import get_db
 from models.user_model import User
 from auth.jwt_handler import SECRET_KEY, ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
+# 1. Hàm lấy user hiện tại (User thường)
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -21,7 +22,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         if email is None:
             raise credentials_exception
     except JWTError:
-        # ✅ Nếu token hết hạn hoặc lỗi → tìm user theo token cũ và set offline
+        # Nếu token lỗi/hết hạn -> Set user offline (Logic cũ của bạn)
         try:
             decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": False})
             email = decoded.get("sub")
@@ -32,9 +33,19 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             pass
         raise credentials_exception
 
-    # ✅ Tìm user
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception
 
     return user
+
+# ✅ 2. Hàm kiểm tra quyền Admin (BẮT BUỘC PHẢI CÓ)
+def get_current_admin(current_user: User = Depends(get_current_user)):
+    # Kiểm tra trường role trong database
+    # Lưu ý: Bạn phải chắc chắn đã chạy lệnh SQL thêm cột role vào bảng users
+    if getattr(current_user, "role", "user") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bạn không có quyền truy cập quản trị viên (Admin only)"
+        )
+    return current_user

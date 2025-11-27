@@ -10,6 +10,7 @@ import Notifications from "./pages/Notifications.jsx";
 import Messages from "./pages/Messages.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 import About from "./pages/About.jsx";
+import Events from "./pages/Events";
 
 // LOADER
 import PageLoader from "./components/PageLoader";
@@ -21,6 +22,7 @@ import Users from "./admin/pages/Users.jsx";
 import Matches from "./admin/pages/Matches.jsx";
 import AdminMessages from "./admin/pages/Messages.jsx";
 import RequireAdmin from "./admin/RequireAdmin";
+import AdminEvents from "./admin/pages/Events";
 
 
 export default function App() {
@@ -142,6 +144,13 @@ export default function App() {
   }
 />
 
+<Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
+
+<Route path="/admin/events" element={
+    <RequireAdmin>
+        <AdminEvents />
+    </RequireAdmin>
+} />
 
         {/* 404 fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

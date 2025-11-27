@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Body
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from database import get_db
@@ -8,6 +8,8 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import date
 from pathlib import Path
+import shutil
+import os
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -21,7 +23,7 @@ class PhotoResponse(BaseModel):
     is_avatar: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True # 👈 Đã sửa từ orm_mode
 
 
 class UserProfileResponse(BaseModel):
@@ -29,26 +31,27 @@ class UserProfileResponse(BaseModel):
     email: str
     full_name: str
     gender: str
-    birthday: Optional[date]
-    job: Optional[str]
-    city: Optional[str]
-    bio: Optional[str]
-    height: Optional[str]
+    role: Optional[str] = "user" # Thêm role để trả về cho frontend
+    birthday: Optional[date] = None
+    job: Optional[str] = None
+    city: Optional[str] = None
+    bio: Optional[str] = None
+    height: Optional[str] = None
     photos: List[PhotoResponse] = []
     interests: List[str] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True # 👈 Đã sửa từ orm_mode
 
 
 class UserUpdateRequest(BaseModel):
-    full_name: Optional[str]
-    gender: Optional[str]
-    birthday: Optional[str]
-    job: Optional[str]
-    city: Optional[str]
-    bio: Optional[str]
-    height: Optional[str]
+    full_name: Optional[str] = None
+    gender: Optional[str] = None
+    birthday: Optional[date] = None # Sửa kiểu dữ liệu cho đúng
+    job: Optional[str] = None
+    city: Optional[str] = None
+    bio: Optional[str] = None
+    height: Optional[str] = None
 
 
 # ===============================
@@ -57,11 +60,12 @@ class UserUpdateRequest(BaseModel):
 
 @router.get("/me", response_model=UserProfileResponse)
 def get_me(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # Lấy thông tin mới nhất từ DB để đảm bảo role được cập nhật
     user = db.query(User).filter(User.user_id == current_user.user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # ✅ Lấy ảnh (dùng text() đúng cú pháp SQLAlchemy 2.0)
+    # ✅ Lấy ảnh
     photos = db.execute(
         text("SELECT photo_id, url, is_avatar FROM photos WHERE user_id = :uid"),
         {"uid": user.user_id}
@@ -77,6 +81,7 @@ def get_me(current_user: User = Depends(get_current_user), db: Session = Depends
         {"uid": user.user_id}
     ).fetchall()
 
+    # Trả về dict kết hợp dữ liệu user và các list phụ
     return {
         **user.__dict__,
         "photos": [dict(p._mapping) for p in photos],
@@ -99,13 +104,14 @@ def update_profile(
         raise HTTPException(status_code=404, detail="User not found")
 
     # ✅ Cập nhật các field có giá trị
-    for field, value in update_data.dict(exclude_unset=True).items():
+    update_dict = update_data.model_dump(exclude_unset=True) # Dùng model_dump cho Pydantic V2
+    for field, value in update_dict.items():
         setattr(user, field, value)
 
     db.commit()
     db.refresh(user)
 
-    # ✅ Lấy lại ảnh + sở thích
+    # ✅ Lấy lại ảnh + sở thích để trả về full profile
     photos = db.execute(
         text("SELECT photo_id, url, is_avatar FROM photos WHERE user_id = :uid"),
         {"uid": user.user_id}
@@ -128,7 +134,6 @@ def update_profile(
 # ===============================
 # 📸 API: Cập nhật ảnh đại diện
 # ===============================
-from fastapi import UploadFile, File
 
 @router.post("/me/avatar")
 def upload_avatar(
@@ -136,10 +141,6 @@ def upload_avatar(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    import shutil, os
-    from pathlib import Path
-    from sqlalchemy import text
-
     # 🧩 Tạo thư mục uploads nếu chưa có
     upload_dir = "uploads"
     os.makedirs(upload_dir, exist_ok=True)
@@ -149,7 +150,7 @@ def upload_avatar(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # 🧩 Chuẩn hóa đường dẫn (tránh lỗi \ trên Windows)
+    # 🧩 Chuẩn hóa đường dẫn
     public_url = "/" + str(Path(file_path)).replace("\\", "/")
 
     # 🧩 Đặt ảnh cũ về is_avatar=0
@@ -166,13 +167,9 @@ def upload_avatar(
     return {"message": "Avatar updated", "url": public_url}
 
 
-
-
-
 # ===============================
 # 💖 API: Cập nhật sở thích
 # ===============================
-from fastapi import Body
 
 @router.put("/me/interests")
 def update_interests(
@@ -187,7 +184,7 @@ def update_interests(
         if not name.strip():
             continue
 
-        # ✅ Chuẩn hóa chữ (bỏ khoảng trắng + chữ đầu in hoa)
+        # ✅ Chuẩn hóa chữ
         name = name.strip().capitalize()
 
         # ✅ Kiểm tra sở thích đã tồn tại chưa
@@ -197,17 +194,20 @@ def update_interests(
         if not existing:
             db.execute(text("INSERT INTO interests (name) VALUES (:n)"), {"n": name})
             db.commit()
+            # Lấy lại ID vừa tạo
             existing = db.execute(text("SELECT interest_id FROM interests WHERE name = :n"), {"n": name}).fetchone()
 
         # ✅ Thêm liên kết user - interest
-        db.execute(
-            text("INSERT INTO user_interests (user_id, interest_id) VALUES (:u, :i)"),
-            {"u": current_user.user_id, "i": existing[0]},
-        )
+        # Kiểm tra existing[0] có tồn tại ko để tránh lỗi index
+        if existing:
+            db.execute(
+                text("INSERT INTO user_interests (user_id, interest_id) VALUES (:u, :i)"),
+                {"u": current_user.user_id, "i": existing[0]},
+            )
 
     db.commit()
 
-    # ✅ Trả về danh sách cập nhật mới nhất từ DB
+    # ✅ Trả về danh sách cập nhật mới nhất
     result = db.execute(
         text("""
             SELECT i.name FROM interests i
@@ -220,7 +220,9 @@ def update_interests(
     return {"message": "✅ Cập nhật sở thích thành công", "interests": [r[0] for r in result]}
 
 
-# ✅ API xem hồ sơ người khác (read-only)
+# ===============================
+# 👁️ API: Xem hồ sơ người khác (Read-only)
+# ===============================
 @router.get("/{user_id}", response_model=UserProfileResponse)
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == user_id).first()

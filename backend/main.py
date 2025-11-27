@@ -11,13 +11,15 @@ from routers import (
     notification_router, 
     match_router, 
     message_router,
+    event_router,
     
 )
 
 from routers import admin_router
 from auth import auth_router
 from fastapi.staticfiles import StaticFiles
-from websocket import message_ws, call_ws
+from websocket import message_ws, call_ws, event_chat_ws
+
 
 app = FastAPI(title="LoveConnect API ❤️")
 
@@ -44,10 +46,12 @@ app.include_router(notification_router.router)
 app.include_router(match_router.router)
 app.include_router(message_router.router)
 app.include_router(admin_router.router)
+app.include_router(event_router.router)
 
 # ✅ WebSocket Routers
 app.include_router(message_ws.router)
 app.include_router(call_ws.router)
+app.include_router(event_chat_ws.router)
 
 # ✅ Mount thư mục uploads để xem được ảnh
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

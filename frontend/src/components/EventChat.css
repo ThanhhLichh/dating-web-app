@@ -1,0 +1,57 @@
+.event-chat-box {
+  display: flex;
+  flex-direction: column;
+  height: 400px; /* Chiều cao cố định trong Modal */
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+
+.ec-header {
+  padding: 10px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  font-weight: bold;
+  color: #ff4b7d;
+}
+
+.ec-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ec-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+.ec-msg.me { align-self: flex-end; align-items: flex-end; }
+.ec-msg.other { align-self: flex-start; align-items: flex-start; }
+
+.ec-sender { font-size: 0.75rem; color: #888; margin-bottom: 2px; }
+
+.ec-bubble {
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+}
+
+.ec-msg.me .ec-bubble { background: #ff4b7d; color: white; border-bottom-right-radius: 2px; }
+.ec-msg.other .ec-bubble { background: white; border: 1px solid #ddd; border-bottom-left-radius: 2px; }
+
+.ec-time { font-size: 0.7rem; color: #aaa; margin-top: 2px; }
+
+.ec-input {
+  display: flex;
+  padding: 8px;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.ec-input input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
+.ec-input button { background: none; border: none; color: #ff4b7d; margin-left: 5px; cursor: pointer; }

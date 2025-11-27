@@ -5,6 +5,7 @@ import {
   MdFavorite,
   MdMessage,
 } from "react-icons/md";
+import { FaCalendarAlt } from "react-icons/fa";
 import "./AdminSidebar.css";
 import logo from "../../assets/logo.svg";
 
@@ -42,6 +43,10 @@ export default function AdminSidebar({ open, onClose }) {
           <NavLink to="/admin/messages">
             <MdMessage /> Messages
           </NavLink>
+
+          <NavLink to="/admin/events" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
+    <FaCalendarAlt /> <span>Sự kiện</span>
+</NavLink>
         </nav>
       </aside>
     </>

@@ -1,0 +1,156 @@
+/* Layout chính */
+.events-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 80vh;
+  font-family: "Poppins", sans-serif;
+  background-color: #f8f9fa;
+}
+
+.events-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.events-header h1 {
+  color: #ff4b7d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+/* Card */
+.event-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+}
+
+.event-image-wrapper { height: 200px; }
+.event-image { width: 100%; height: 100%; object-fit: cover; }
+
+.event-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.event-title { margin: 0 0 10px 0; color: #333; font-size: 1.2rem; }
+.event-meta { display: flex; flex-direction: column; gap: 5px; color: #666; font-size: 0.9rem; margin-bottom: 15px; }
+.event-desc { font-size: 0.9rem; color: #555; margin-bottom: 20px; flex: 1; line-height: 1.5; }
+
+/* Actions Area */
+.event-actions { display: flex; gap: 10px; }
+
+.btn-join {
+  flex: 1; padding: 10px;
+  background: linear-gradient(135deg, #ff4b7d, #ff7fa4);
+  color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+}
+
+.btn-leave {
+  flex: 1; padding: 10px;
+  background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2;
+  border-radius: 8px; font-weight: bold; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+
+.btn-view-users {
+  padding: 10px 15px; border: none; border-radius: 8px; font-weight: bold;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.btn-view-users.active {
+  background: #e0f2fe; color: #007bff; cursor: pointer;
+}
+
+.btn-view-users.disabled {
+  background: #f5f5f5; color: #aaa; cursor: not-allowed; border: 1px solid #eee;
+}
+
+/* Modal */
+.participants-modal {
+  max-width: 500px; width: 95%; max-height: 80vh;
+  display: flex; flex-direction: column; padding: 0 !important;
+}
+
+.modal-header {
+  padding: 15px 20px; border-bottom: 1px solid #eee;
+  display: flex; justify-content: space-between; alignItems: center; background: #f9fafb;
+}
+
+.participants-list {
+  padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
+}
+
+.participant-item {
+  display: flex; alignItems: center; gap: 15px;
+  background: white; padding: 10px; border-radius: 12px; border: 1px solid #eee;
+}
+
+.participant-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+.p-info { flex: 1; }
+.p-info h4 { margin: 0; font-size: 1rem; }
+.p-info span { font-size: 0.85rem; color: #777; }
+
+.btn-match-small {
+  background: #ffe0e6; color: #ff4b7d; border: none; padding: 8px 12px;
+  border-radius: 20px; cursor: pointer; display: flex; alignItems: center; gap: 5px;
+}
+
+.empty-text { text-align: center; color: #888; margin-top: 20px; }
+
+.joined-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-icon {
+  flex: 1;
+  padding: 10px 5px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  transition: transform 0.2s;
+}
+
+.btn-icon:hover {
+  transform: translateY(-2px);
+}
+
+/* Nút Hủy */
+.btn-leave {
+  background: #ffebee;
+  color: #d32f2f;
+  flex: 0.5; /* Nút hủy nhỏ hơn xíu */
+}
+
+/* Nút List */
+.btn-list {
+  background: #e0f2fe;
+  color: #007bff;
+}
+
+/* Nút Chat */
+.btn-chat {
+  background: #e8f5e9;
+  color: #2e7d32;
+}

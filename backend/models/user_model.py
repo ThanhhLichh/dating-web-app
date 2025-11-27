@@ -15,6 +15,7 @@ class User(Base):
     email = Column(String(100), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     full_name = Column(String(100), nullable=False)
+    role = Column(String(10), default="user")
     gender = Column(Enum(GenderEnum), nullable=False)
     birthday = Column(Date)
     job = Column(String(100))

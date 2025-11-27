@@ -3,29 +3,29 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/logo.svg";
 import defaultAvatar from "../assets/default-avatar.webp";
-import { FaHome, FaUser, FaComments, FaBell } from "react-icons/fa";
+
+// 👇 Import thêm icon FaCalendarAlt
+import { FaHome, FaUser, FaComments, FaBell, FaCalendarAlt } from "react-icons/fa";
+
 import api from "../services/api";
 import { getNotifications } from "../services/notificationService";
 import { logout } from "../services/authService";
 import { API_URL } from "../config";
 
 export default function Navbar() {
-  const [user, setUser] = useState({ full_name: "Người dùng", avatar: "" });
+  const [user, setUser] = useState({ full_name: "Người dùng", avatar: "", role: "user" });
   const [showMenu, setShowMenu] = useState(false);
-  const [showNotif, setShowNotif] = useState(false);
   const [notifications, setNotifications] = useState([]);
-
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ⭐ Hàm chuyển trang có bật loader ngay lập tức
   const go = (path) => {
     window.dispatchEvent(new Event("route-loading")); 
     navigate(path);
   };
 
-  // ⭐ Lấy thông tin user hiện tại
+  // Lấy thông tin user
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
@@ -39,12 +39,14 @@ export default function Navbar() {
         const photo = res.data.photos?.find((p) => p.is_avatar);
         const avatar = photo ? `${API_URL}${photo.url}` : defaultAvatar;
 
-        setUser({ full_name: res.data.full_name, avatar });
+        const userData = { 
+            full_name: res.data.full_name, 
+            avatar,
+            role: res.data.role || "user" 
+        };
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ full_name: res.data.full_name, avatar })
-        );
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
       } catch (err) {
         console.error("Lỗi tải người dùng:", err);
       }
@@ -53,7 +55,7 @@ export default function Navbar() {
     fetchUser();
   }, []);
 
-  // ⭐ Lấy thông báo
+  // Lấy thông báo
   useEffect(() => {
     const fetchNotif = async () => {
       try {
@@ -66,18 +68,6 @@ export default function Navbar() {
     fetchNotif();
   }, []);
 
-  const handleLikeBack = (senderId) => {
-    console.log("Thích lại:", senderId);
-  };
-
-  const handleViewProfile = (senderId) => {
-    go(`/profile/${senderId}`);
-  };
-
-  const handleDismiss = (notiId) => {
-    setNotifications((prev) => prev.filter((n) => n.noti_id !== notiId));
-  };
-
   return (
     <nav className="navbar">
 
@@ -89,43 +79,47 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* CENTER */}
+      {/* CENTER: Menu Chính */}
       <div className="navbar-center">
-        <a
-          onClick={() => go("/home")}
+        <a 
+          onClick={() => go("/home")} 
           className={location.pathname === "/home" ? "active" : ""}
         >
           <FaHome /> Trang chủ
         </a>
 
-        <a
-          onClick={() => go("/profile")}
+        {/* ✅ NÚT SỰ KIỆN MỚI THÊM */}
+        <a 
+          onClick={() => go("/events")} 
+          className={location.pathname === "/events" ? "active" : ""}
+        >
+          <FaCalendarAlt /> Sự kiện
+        </a>
+
+        <a 
+          onClick={() => go("/profile")} 
           className={location.pathname === "/profile" ? "active" : ""}
         >
           <FaUser /> Hồ sơ
         </a>
 
-        <a
-  onClick={() => go("/messages")}
-  className={location.pathname === "/messages" ? "active" : ""}>
-  <FaComments /> Tin nhắn
+        <a 
+          onClick={() => go("/messages")} 
+          className={location.pathname === "/messages" ? "active" : ""}
+        >
+          <FaComments /> Tin nhắn
+        </a>
 
-</a>
-
-
-        <a
-  onClick={() => go("/notifications")}
-  className={location.pathname === "/notifications" ? "active" : ""}>
-  <FaBell /> Thông báo
-
-</a>
-
+        <a 
+          onClick={() => go("/notifications")} 
+          className={location.pathname === "/notifications" ? "active" : ""}
+        >
+          <FaBell /> Thông báo
+        </a>
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT: Avatar & Dropdown */}
       <div className="navbar-right">
-
-        
         <span className="greeting">Hi, {user.full_name.split(" ")[0]}</span>
 
         <div className="avatar-wrapper" onClick={() => setShowMenu(!showMenu)}>
@@ -137,14 +131,19 @@ export default function Navbar() {
 
           {showMenu && (
             <div className="dropdown-menu">
+              {/* Chỉ hiện nếu là Admin */}
+              {user.role === 'admin' && (
+                  <a onClick={() => go("/admin")} style={{color: '#ff4b7d', fontWeight: 'bold'}}>
+                    ⚡ Trang quản trị
+                  </a>
+              )}
+
               <a onClick={() => go("/profile")}>Trang cá nhân</a>
               <button onClick={() => logout()}>Đăng xuất</button>
             </div>
           )}
         </div>
       </div>
-
-      
     </nav>
   );
 }
