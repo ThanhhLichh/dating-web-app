@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { getRecommendation, likeUser, skipUser } from "../services/homeService";
+import { getRecommendation, likeUser, skipUser, randomMatch } from "../services/homeService";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./Home.css";
 import { getProfileById } from "../services/userService";
 import { API_URL } from "../config";
+import toast from "react-hot-toast";
+
 
 import {
   FaHeart,
@@ -23,6 +25,12 @@ export default function Home() {
   const [detailUser, setDetailUser] = useState(null);
   const [total, setTotal] = useState(0);
   const [index, setIndex] = useState(0);
+  const [matchResult, setMatchResult] = useState(null);
+  const [isSearchingMatch, setIsSearchingMatch] = useState(false);
+  const [searchStep, setSearchStep] = useState(0);
+  const [noMatchPopup, setNoMatchPopup] = useState(false);
+
+
 
   const [filters, setFilters] = useState({
     gender: "",
@@ -85,6 +93,63 @@ export default function Home() {
       alert("Không thể tải hồ sơ chi tiết!");
     }
   };
+
+const handleRandomMatch = async () => {
+  try {
+    // Bật popup loading
+    setIsSearchingMatch(true);
+    setSearchStep(0);
+
+    const steps = [
+      "Đang phân tích độ tuổi...",
+      "Đang so khớp giới tính mong muốn...",
+      "Đang đối chiếu sở thích hai bên...",
+      "Hệ thống đang tìm người phù hợp nhất..."
+    ];
+
+    // Animation 4 bước
+    for (let i = 0; i < steps.length; i++) {
+      setSearchStep(i);
+      await new Promise(r => setTimeout(r, 1000));
+    }
+
+    await new Promise(r => setTimeout(r, 1500));
+
+    // Gọi API thật
+    const res = await randomMatch();
+
+    // ❌ KHÔNG tắt overlay ở đây
+
+    // ❗ Không tìm thấy người phù hợp
+    if (!res || !res.matched_user) {
+      setTimeout(() => {
+  setIsSearchingMatch(false);
+  setNoMatchPopup(true);   // Bật popup icon buồn
+}, 300);
+
+return;
+
+    }
+
+    // ✔ Nếu tìm thấy match → TẮT overlay NGAY TẠI ĐÂY
+    setIsSearchingMatch(false);
+
+    // ✔ Hiển thị popup match thành công
+    setMatchResult({
+      match_id: res.match_id,
+      ...res.matched_user,
+    });
+
+  } catch (err) {
+    setIsSearchingMatch(false);
+    toast.error("Lỗi khi ghép đôi!");
+  }
+};
+
+
+
+
+
 
   return (
     <>
@@ -168,6 +233,9 @@ export default function Home() {
             </button>
           </aside>
 
+          
+
+
           <section className="recommend-section">
             <div className="recommend-header">
               <h3>Gợi ý cho bạn</h3>
@@ -219,6 +287,47 @@ export default function Home() {
               <p className="no-more">{error}</p>
             )}
           </section>
+
+          {/* 🎉 Random Match Event */}
+{/* 🎉 Random Match Event */}
+<section className="event-box">
+  <h3>🎉 Sự kiện Ghép Đôi Ngẫu Nhiên</h3>
+
+  <div className="event-desc-box">
+  <p>
+    Tham gia sự kiện đặc biệt của <strong>LoveConnect</strong>!  
+    Chúng tôi sẽ tìm cho bạn một người phù hợp nhất dựa trên:
+  </p>
+
+  <ul className="event-desc-list">
+    <li>🎯 Độ tuổi tương thích</li>
+    <li>💗 Giới tính phù hợp</li>
+    <li>✨ Sở thích tương đồng</li>
+  </ul>
+
+  <p>
+    Nhấn nút bên dưới để bắt đầu hành trình mới của bạn 💖
+  </p>
+</div>
+
+
+  <button className="btn-random-match fancy-button" onClick={handleRandomMatch}>
+  ✨ Ghép ngẫu nhiên ✨
+</button>
+
+
+  {/* 💖 Hiệu ứng trái tim bay mới */}
+  <div className="floating-hearts">
+    <div>💗</div>
+    <div>💓</div>
+    <div>💗</div>
+    <div>💓</div>
+    <div>💗</div>
+    <div>💓</div>
+  </div>
+</section>
+
+
         </div>
       </div>
 
@@ -291,6 +400,100 @@ export default function Home() {
           </div>
         </div>
       )}
+      {/* 💖 Màn hình chờ tìm đối tượng */}
+{/* 💖 MÀN HÌNH CHỜ GHÉP ĐÔI */}
+{isSearchingMatch && (
+  <div className="match-search-overlay">
+    <div className="match-search-box">
+      
+      <div className="heart-pulse">💗</div>
+
+      <p className="search-text">
+        {[
+          "Đang phân tích độ tuổi...",
+          "Đang so khớp giới tính...",
+          "Đang đối chiếu sở thích...",
+          "Hệ thống đang tìm người phù hợp nhất..."
+        ][searchStep]}
+      </p>
+    </div>
+  </div>
+)}
+
+
+
+      {/* 💖 Popup match thành công */}
+{matchResult && (
+  <div className="modal-overlay" onClick={() => setMatchResult(null)}>
+    <div className="match-popup" onClick={(e) => e.stopPropagation()}>
+      <button className="close-btn" onClick={() => setMatchResult(null)}>✕</button>
+
+      <h2 className="match-title">💘 Ghép Đôi Thành Công!</h2>
+
+      <img
+        src={`${API_URL}${matchResult.avatar || "/default-avatar.png"}`}
+        className="match-avatar"
+        alt="matched"
+      />
+
+      <h3 className="match-name">{matchResult.full_name}</h3>
+
+      <div className="match-actions">
+        <button
+          className="btn-detail"
+          onClick={() => {
+            getProfileById(matchResult.user_id).then((data) => {
+              setDetailUser(data);
+              setShowDetail(true);
+              setMatchResult(null);
+            });
+          }}
+        >
+          👀 Xem chi tiết
+        </button>
+
+        <button
+  className="btn-chat"
+  onClick={() => (window.location.href = "/messages")}
+>
+  💬 Nhắn tin ngay
+</button>
+
+      </div>
+    </div>
+  </div>
+)}
+
+{/* 💔 Popup Không Thể Ghép Đôi */}
+{noMatchPopup && (
+  <div className="modal-overlay" onClick={() => setNoMatchPopup(false)}>
+    <div className="fail-popup" onClick={(e) => e.stopPropagation()}>
+      <button className="close-btn" onClick={() => setNoMatchPopup(false)}>
+        ✕
+      </button>
+
+      <div className="fail-icon">😢</div>
+
+      <h2 className="fail-title">Rất tiếc...</h2>
+      <p className="fail-message">
+        Hệ thống của chúng tôi chưa tìm ra người phù hợp với bạn. Xin vui lòng thử lại sau! 💖
+      </p>
+
+      <button
+  className="btn-try-again"
+  onClick={() => {
+    setNoMatchPopup(false);
+    handleRandomMatch();
+  }}
+>
+  Thử lại
+</button>
+
+    </div>
+  </div>
+)}
+
+
 
       <Footer />
     </>

@@ -282,3 +282,35 @@ def delete_message(mid: int, db: Session = Depends(get_db), user: User = Depends
     db.commit()
 
     return {"message": "Đã xóa tin nhắn"}
+
+# ============================
+# DELETE MATCH
+# ============================
+@router.delete("/matches/{mid}")
+def delete_match(mid: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    require_admin(user)
+
+    # Kiểm tra match có tồn tại không
+    check = db.execute(
+        text("SELECT match_id FROM matches WHERE match_id = :id"),
+        {"id": mid}
+    ).fetchone()
+
+    if not check:
+        raise HTTPException(status_code=404, detail="Match không tồn tại")
+
+    # Xóa tất cả message liên quan trước (tránh lỗi foreign key)
+    db.execute(
+        text("DELETE FROM messages WHERE match_id = :id"),
+        {"id": mid}
+    )
+
+    # Xóa match
+    db.execute(
+        text("DELETE FROM matches WHERE match_id = :id"),
+        {"id": mid}
+    )
+
+    db.commit()
+    return {"message": "Xóa match thành công"}
+
