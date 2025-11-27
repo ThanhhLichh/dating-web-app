@@ -34,12 +34,14 @@ def get_recommendations(
     max_birth = today.replace(year=today.year - min_age)
 
     where_clauses = [
-        "u.user_id != :uid",
-        "u.is_admin = 0", 
-        "u.user_id NOT IN (SELECT to_user_id FROM likes WHERE from_user_id = :uid)",
-        "u.user_id NOT IN (SELECT target_user_id FROM skips WHERE user_id = :uid)",
-        "u.birthday BETWEEN :min_birth AND :max_birth",
-    ]
+    "u.user_id != :uid",
+    "u.is_admin = 0", 
+    "u.user_id NOT IN (SELECT to_user_id FROM likes WHERE from_user_id = :uid)",
+    "u.user_id NOT IN (SELECT target_user_id FROM skips WHERE user_id = :uid)",
+    "u.user_id NOT IN (SELECT user1_id FROM matches WHERE user2_id = :uid UNION SELECT user2_id FROM matches WHERE user1_id = :uid)",
+    "u.birthday BETWEEN :min_birth AND :max_birth",
+]
+
     params = {"uid": current_user.user_id, "min_birth": min_birth, "max_birth": max_birth}
 
     if gender:

@@ -26,3 +26,14 @@ export const skipUser = async (targetId) => {
   });
   return res.data;
 };
+
+export const randomMatch = async () => {
+  const token = localStorage.getItem("token");
+
+  const res = await api.post("/matches/random", {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return res.data;
+};
+
