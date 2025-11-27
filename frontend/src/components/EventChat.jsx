@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { WS_URL, API_URL } from "../config"; // 👈 Nhớ import API_URL
-import { FaPaperPlane } from "react-icons/fa";
+import { WS_URL, API_URL } from "../config";
+import { FaPaperPlane, FaComments } from "react-icons/fa";
 import "./EventChat.css";
 
 export default function EventChat({ eventId, eventName }) {
@@ -12,10 +12,9 @@ export default function EventChat({ eventId, eventName }) {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // ✅ 1. TẢI LỊCH SỬ TIN NHẮN (Khi eventId thay đổi)
+  // 1. Tải lịch sử tin nhắn
   useEffect(() => {
     if (!eventId) return;
-    
     const fetchHistory = async () => {
         try {
             const res = await fetch(`${API_URL}/events/${eventId}/messages`, {
@@ -32,30 +31,23 @@ export default function EventChat({ eventId, eventName }) {
     fetchHistory();
   }, [eventId]);
 
-  // ✅ 2. KẾT NỐI WEBSOCKET
+  // 2. Kết nối WebSocket
   useEffect(() => {
     if (!eventId || !token) return;
-
     const ws = new WebSocket(`${WS_URL}/ws/event-chat/${eventId}?token=${token}`);
-
-    ws.onopen = () => console.log(`🟢 Đã vào chat room: ${eventName}`);
     
     ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
-        // Thêm tin nhắn mới vào danh sách
         setMessages((prev) => [...prev, msg]);
       } catch (e) { console.error(e); }
     };
 
     setSocket(ws);
-
-    return () => {
-      if (ws.readyState === 1) ws.close();
-    };
+    return () => { if (ws.readyState === 1) ws.close(); };
   }, [eventId]);
 
-  // ✅ 3. TỰ ĐỘNG CUỘN XUỐNG
+  // 3. Auto scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -73,18 +65,25 @@ export default function EventChat({ eventId, eventName }) {
     if (socket.readyState === 1) {
         socket.send(JSON.stringify(msgData));
         setInput("");
-        // Không cần setMessages ở đây vì Server sẽ gửi lại tin nhắn này qua WebSocket cho chính mình
     }
   };
 
   return (
     <div className="ec-container">
+      {/* Header */}
       <div className="ec-header">
-        💬 Chat nhóm: {eventName}
+        <FaComments style={{color: '#ff4b7d'}}/> 
+        <span>Chat nhóm: {eventName}</span>
       </div>
 
+      {/* Body Chat */}
       <div className="ec-body">
-        {messages.length === 0 && <p className="ec-empty">Chưa có tin nhắn nào. Hãy bắt đầu trò chuyện!</p>}
+        {messages.length === 0 && (
+          <div className="ec-empty">
+            <p>Chưa có tin nhắn nào.</p>
+            <p>Hãy là người đầu tiên bắt đầu trò chuyện! 👋</p>
+          </div>
+        )}
         
         {messages.map((msg, idx) => (
           <div key={idx} className={`ec-msg ${msg.is_me ? "me" : "other"}`}>
@@ -96,13 +95,16 @@ export default function EventChat({ eventId, eventName }) {
         <div ref={chatEndRef} />
       </div>
 
+      {/* Input Area */}
       <form className="ec-input-area" onSubmit={handleSend}>
         <input 
           value={input} 
           onChange={(e) => setInput(e.target.value)} 
-          placeholder="Nhắn gì đó..." 
+          placeholder="Nhập tin nhắn..." 
         />
-        <button type="submit"><FaPaperPlane /></button>
+        <button type="submit" disabled={!input.trim()}>
+            <FaPaperPlane />
+        </button>
       </form>
     </div>
   );
