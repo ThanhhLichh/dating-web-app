@@ -111,11 +111,17 @@ export default function Navbar() {
         </a>
 
         <a 
-          onClick={() => go("/notifications")} 
-          className={location.pathname === "/notifications" ? "active" : ""}
-        >
-          <FaBell /> Thông báo
-        </a>
+  onClick={() => go("/notifications")} 
+  className={location.pathname === "/notifications" ? "active notif-btn" : "notif-btn"}
+>
+  <FaBell /> Thông báo
+
+  {/* 🔴 Badge nếu có thông báo chưa đọc */}
+  {notifications.some(n => !n.is_read) && (
+    <span className="notif-dot"></span>
+  )}
+</a>
+
       </div>
 
       {/* RIGHT: Avatar & Dropdown */}

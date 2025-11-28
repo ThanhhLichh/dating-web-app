@@ -24,6 +24,7 @@ export default function Messages() {
   const [socket, setSocket] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null); 
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   // 📞 Call states
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
@@ -291,9 +292,23 @@ export default function Messages() {
         <div className="messages-container">
           <div className="match-sidebar">
             <div className="sidebar-header"><FaComments className="chat-icon" /> <h2>Love Chat</h2></div>
-            <div className="search-box"><FaSearch className="search-icon" /><input type="text" placeholder="Tìm kiếm..." className="match-search" /></div>
+            <div className="search-box">
+                <FaSearch className="search-icon" />
+              <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          className="match-search"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+              />
+            </div>
+
             <div className="match-list">
-              {matches.map((m) => (
+              {matches
+                   .filter((m) =>
+                      m.full_name.toLowerCase().includes(searchKeyword.toLowerCase())
+                  )
+                    .map((m) => (
                 <div key={m.match_id} className={`match-item ${selectedMatch?.match_id === m.match_id ? "active" : ""}`} onClick={() => handleSelectMatch(m)}>
                   <img src={`${API_URL}${m.avatar_url || defaultAvatar}`} alt={m.full_name} />
                   <div className="match-info">
@@ -308,9 +323,21 @@ export default function Messages() {
           </div>
 
           <div className="chat-section">
-            {!selectedMatch ? (
-              <div className="empty-chat"><FaHeart className="heart-icon" /><h2>💬 Chọn người để trò chuyện!</h2></div>
-            ) : (
+             {!selectedMatch ? (
+    matches.length === 0 ? (
+      <div className="empty-chat no-match">
+        <FaHeart className="heart-icon" />
+        <h2>Bạn chưa có ai để trò chuyện 😢</h2>
+        <p>Hãy nhanh chóng ghép đôi ngay!</p>
+        <a href="/home" className="go-match-btn">Đi ghép đôi ❤</a>
+      </div>
+    ) : (
+      <div className="empty-chat">
+        <FaHeart className="heart-icon" />
+        <h2>💬 Chọn người để trò chuyện!</h2>
+      </div>
+    )
+  ) : (
               <>
                 <div className="chat-header">
                   <img src={`${API_URL}${selectedMatch.avatar_url || defaultAvatar}`} alt="avatar" />

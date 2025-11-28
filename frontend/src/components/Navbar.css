@@ -367,3 +367,92 @@
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* === FIX ICON NHỎ & GẦN NHAU KHI RESPONSIVE === */
+
+/* Điện thoại (portrait) */
+@media (max-width: 600px) {
+  /* Thu nhỏ icon */
+  .navbar-center a svg {
+    font-size: 16px !important;
+  }
+
+  /* Giảm khoảng cách giữa các icon */
+  .navbar-center {
+    gap: 6px !important;
+  }
+
+  /* Thu nhỏ text brand */
+  .brand-name {
+    font-size: 15px;
+  }
+
+  /* Avatar nhỏ hơn nữa cho cân */
+  .avatar,
+  .nav-avatar {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  /* Giảm khoảng cách phần phải */
+  .navbar-right {
+    gap: 10px !important;
+  }
+}
+
+/* Điện thoại siêu nhỏ */
+@media (max-width: 380px) {
+  .navbar-center {
+    gap: 4px !important;
+  }
+  .navbar-center a svg {
+    font-size: 14px !important;
+  }
+
+  .avatar,
+  .nav-avatar {
+    width: 26px !important;
+    height: 26px !important;
+  }
+}
+
+/* Tắt highlight click trên mọi thiết bị */
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Tắt focus ring */
+a, button, .navbar-center a, .navbar-right *, svg {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Xóa background khi active/focus */
+a:active, a:focus,
+button:active, button:focus,
+.navbar-center a:active, .navbar-center a:focus,
+.navbar-right *:active, .navbar-right *:focus {
+  background: transparent !important;
+}
+
+/* Một số trình duyệt thêm màu nhạt khi active */
+.navbar-center a:active,
+.navbar-right .notif-icon:active {
+  opacity: 0.7;        /* nếu muốn, có thể bỏ */
+  background: none !important;
+}
+
+.notif-btn {
+  position: relative;
+}
+
+.notif-dot {
+  width: 10px;
+  height: 10px;
+  background: #ff1744;
+  border-radius: 50%;
+  position: absolute;
+  top: -2px;
+  right: -8px;
+}
+

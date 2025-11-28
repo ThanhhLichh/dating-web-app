@@ -47,14 +47,7 @@
   transition: 0.2s;
 }
 
-.notif-card.unread {
-  border-left: 4px solid #ff4b7d;
-  background: #fff0f5; /* Nền hồng nhạt cho tin chưa đọc */
-}
 
-.notif-card.read {
-  opacity: 0.8;
-}
 
 .notif-card:hover {
   transform: translateY(-2px);

@@ -20,3 +20,17 @@ def get_notifications(db: Session = Depends(get_db), current_user: User = Depend
     """)
     rows = db.execute(sql, {"uid": current_user.user_id}).fetchall()
     return [dict(r._mapping) for r in rows]
+
+@router.put("/mark-read")
+def mark_notifications_read(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    sql = text("""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE user_id = :uid AND is_read = 0
+    """)
+    db.execute(sql, {"uid": current_user.user_id})
+    db.commit()
+    return {"message": "All notifications marked as read"}

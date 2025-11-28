@@ -3,7 +3,7 @@ import api from "./api";
 
 export const getNotifications = async () => {
   const token = localStorage.getItem("token");
-  const res = await api.get("/notifications", {
+  const res = await api.get("/notifications/", {   // ✅ thêm /
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
@@ -22,6 +22,15 @@ export const likeBackUser = async (userId) => {
 export const skipUser = async (userId) => {
   const token = localStorage.getItem("token");
   const res = await api.post(`/home/${userId}/skip`, null, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+// NEW — Đánh dấu tất cả thông báo là đã đọc
+export const markRead = async () => {
+  const token = localStorage.getItem("token");
+  const res = await api.put("/notifications/mark-read", null, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;

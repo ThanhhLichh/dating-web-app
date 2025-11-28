@@ -6,6 +6,7 @@ import {
   getNotifications,
   likeBackUser,
   skipUser,
+  markRead
 } from "../services/notificationService";
 import { getProfileById } from "../services/userService";
 import "./Notifications.css";
@@ -77,6 +78,19 @@ export default function Notifications() {
         return n.content;
     }
   };
+
+  // ⭐ Đánh dấu thông báo là đã đọc khi mở trang
+useEffect(() => {
+  const markAll = async () => {
+    try {
+      await markRead();
+    } catch (err) {
+      console.error("Không thể đánh dấu đã đọc:", err);
+    }
+  };
+  markAll();
+}, []);
+
 
   // API lấy thông báo
   useEffect(() => {
