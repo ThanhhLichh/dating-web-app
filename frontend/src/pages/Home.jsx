@@ -29,6 +29,8 @@ export default function Home() {
   const [isSearchingMatch, setIsSearchingMatch] = useState(false);
   const [searchStep, setSearchStep] = useState(0);
   const [noMatchPopup, setNoMatchPopup] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+
 
 
 
@@ -385,15 +387,17 @@ return;
                 <h4>Bộ sưu tập ảnh</h4>
                 <div className="photo-grid">
                   {detailUser.photos
-                    .filter((p) => !p.is_avatar)
-                    .map((p) => (
-                      <img
-                        key={p.photo_id}
-                        src={`${API_URL}${p.url}`}
-                        alt="photo"
-                        className="modal-photo"
-                      />
-                    ))}
+  .filter((p) => !p.is_avatar)
+  .map((p) => (
+    <img
+      key={p.photo_id}
+      src={`${API_URL}${p.url}`}
+      alt="photo"
+      className="modal-photo"
+      onClick={() => setPreviewImage(`${API_URL}${p.url}`)}
+    />
+  ))}
+
                 </div>
               </div>
             )}
@@ -493,6 +497,26 @@ return;
   </div>
 )}
 
+{previewImage && (
+  <div
+    className="image-preview-overlay"
+    onClick={() => setPreviewImage(null)}
+  >
+    <img
+      src={previewImage}
+      className="image-preview-box"
+      onClick={(e) => e.stopPropagation()}
+      alt="preview"
+    />
+
+    <button
+      className="image-preview-close"
+      onClick={() => setPreviewImage(null)}
+    >
+      ✕
+    </button>
+  </div>
+)}
 
 
       <Footer />

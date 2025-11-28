@@ -245,51 +245,48 @@ useEffect(() => {
 
       {showDetail && detailUser && (
   <div className="modal-overlay" onClick={() => setShowDetail(false)}>
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
-      {/* CLOSE */}
+    <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+      
+      {/* Close */}
       <button className="close-btn" onClick={() => setShowDetail(false)}>
         <FaTimes />
       </button>
 
-      {/* TITLE */}
-      <h2 className="modal-title">Hồ sơ chi tiết</h2>
+      {/* Avatar */}
+      <div style={{textAlign: "center"}}>
+        <img
+          src={`${API_URL}${
+            detailUser.photos?.find((p) => p.is_avatar)?.url ||
+            "/default-avatar.png"
+          }`}
+          className="modal-avatar"
+          alt="avatar"
+        />
+        <h2 className="modal-name">{detailUser.full_name}</h2>
+      </div>
 
-      {/* AVATAR */}
-      <img
-        src={`${API_URL}${
-          detailUser.photos?.find((p) => p.is_avatar)?.url ||
-          "/default-avatar.png"
-        }`}
-        className="modal-avatar"
-        alt="avatar"
-      />
-
-      {/* NAME */}
-      <h2>{detailUser.full_name}</h2>
-
-      {/* SUB INFO – CHUẨN 3 ICON */}
+      {/* Sub info */}
       <p className="modal-sub">
-        <FaBirthdayCake style={{ marginRight: 6, color: "#ff4b2b" }} />
+        <FaBirthdayCake style={{ marginRight: 6, color: "#ff4b2b" }} /> 
         {detailUser.birthday?.slice(0, 10) || "—"}
 
         &nbsp;•&nbsp;
 
-        <FaVenusMars style={{ marginRight: 6, color: "#ff66a3" }} />
+        <FaVenusMars style={{ marginRight: 6, color: "#ff66a3" }} /> 
         {detailUser.gender || "—"}
 
         &nbsp;•&nbsp;
 
-        <FaMapMarkerAlt style={{ marginRight: 6, color: "#ff7b66" }} />
+        <FaMapMarkerAlt style={{ marginRight: 6, color: "#ff7b66" }} /> 
         {detailUser.city || "—"}
       </p>
 
-      {/* BIO */}
+      {/* Bio */}
       <p className="modal-bio">
         {detailUser.bio || "Chưa có giới thiệu bản thân"}
       </p>
 
-      {/* INTERESTS */}
+      {/* Interests */}
       {detailUser.interests?.length > 0 && (
         <div className="modal-interests">
           <h4>Sở thích</h4>
@@ -301,27 +298,28 @@ useEffect(() => {
         </div>
       )}
 
-      {/* PHOTO GALLERY */}
-      {detailUser.photos?.length > 1 && (
+      {/* Photo gallery – FIXED VERSION */}
+      {(detailUser.photos || []).filter((p) => !p.is_avatar).length > 0 && (
         <div className="modal-photos">
           <h4>Bộ sưu tập ảnh</h4>
           <div className="photo-grid">
-            {(detailUser.photos || [])
+            {detailUser.photos
               .filter((p) => !p.is_avatar)
               .map((p) => (
                 <img
                   key={p.photo_id}
                   src={`${API_URL}${p.url}`}
+                  className="photo-item"
                   alt="photo"
                 />
               ))}
           </div>
         </div>
       )}
-
     </div>
   </div>
 )}
+
 
 
 

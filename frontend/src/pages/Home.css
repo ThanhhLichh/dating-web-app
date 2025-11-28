@@ -1230,3 +1230,61 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
+
+.btn-apply:active,
+.btn-start:active,
+.fancy-button:active {
+  filter: brightness(0.95);
+  transform: scale(0.98);
+}
+
+/* ============================= */
+/* 📸 Image Preview Lightbox     */
+/* ============================= */
+
+.image-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+  animation: fadeIn 0.2s ease;
+}
+
+.image-preview-box {
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 12px;
+  object-fit: contain;
+  box-shadow: 0 0 25px rgba(255,255,255,0.4);
+  animation: zoomIn 0.25s ease;
+}
+
+.image-preview-close {
+  position: fixed;
+  top: 25px;
+  right: 30px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(5px);
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 22px;
+  color: white;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.image-preview-close:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.1);
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+

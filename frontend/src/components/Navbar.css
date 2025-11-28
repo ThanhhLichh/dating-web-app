@@ -428,12 +428,12 @@ a, button, .navbar-center a, .navbar-right *, svg {
 }
 
 /* Xóa background khi active/focus */
-a:active, a:focus,
+/* a:active, a:focus,
 button:active, button:focus,
 .navbar-center a:active, .navbar-center a:focus,
 .navbar-right *:active, .navbar-right *:focus {
   background: transparent !important;
-}
+} */
 
 /* Một số trình duyệt thêm màu nhạt khi active */
 .navbar-center a:active,
