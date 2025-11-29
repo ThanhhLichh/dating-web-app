@@ -342,7 +342,7 @@ return;
             </button>
 
             <h2 className="modal-title">Hồ sơ chi tiết</h2>
-
+<div className="modal-header-center">
             <img
               src={`${API_URL}${
                 detailUser.photos?.find((p) => p.is_avatar)?.url ||
@@ -351,8 +351,11 @@ return;
               alt="avatar"
               className="modal-avatar"
             />
+            
 
             <h2>{detailUser.full_name}</h2>
+
+            </div>
             <p className="modal-sub">
   <FaBirthdayCake style={{ marginRight: 6, color: "#ff4b2b" }} />
   {detailUser.birthday?.slice(0, 10) || "Chưa rõ"}
