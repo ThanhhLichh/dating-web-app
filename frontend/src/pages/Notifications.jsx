@@ -37,6 +37,8 @@ export default function Notifications() {
   const [showDetail, setShowDetail] = useState(false);
   const [detailUser, setDetailUser] = useState(null);
 
+  const [previewImage, setPreviewImage] = useState(null);
+
   // 💠 Xử lý nội dung theo Style C đẹp nhất
   const renderContent = (n) => {
     const name = n.sender_name || "Người dùng";
@@ -311,12 +313,27 @@ useEffect(() => {
                   src={`${API_URL}${p.url}`}
                   className="photo-item"
                   alt="photo"
+                  onClick={() => setPreviewImage(`${API_URL}${p.url}`)}
                 />
               ))}
           </div>
         </div>
       )}
     </div>
+  </div>
+)}
+
+{previewImage && (
+  <div className="preview-overlay" onClick={() => setPreviewImage(null)}>
+    <img
+      src={previewImage}
+      className="preview-image"
+      alt="preview"
+      onClick={(e) => e.stopPropagation()} // tránh đóng khi bấm vào ảnh
+    />
+    <button className="preview-close" onClick={() => setPreviewImage(null)}>
+      ✕
+    </button>
   </div>
 )}
 

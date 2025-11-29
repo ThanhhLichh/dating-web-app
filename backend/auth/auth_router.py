@@ -7,9 +7,9 @@ from utils.hashing import verify_password, get_password_hash
 from auth.auth_schema import LoginRequest, TokenResponse
 from auth.jwt_handler import create_access_token
 from auth.dependencies import get_current_user
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from datetime import date
-from auth.auth_schema import ChangePasswordRequest  # nhớ import schema
+from auth.auth_schema import ChangePasswordRequest  
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -57,6 +57,17 @@ class RegisterRequest(BaseModel):
     full_name: str
     gender: str
     birthday: date | None = None
+
+    @validator("password")
+    def validate_password(cls, v):
+        import re
+        # ≥ 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt
+        pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+        if not re.match(pattern, v):
+            raise ValueError(
+                "Mật khẩu phải ≥ 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt."
+            )
+        return v
 
 @router.post("/register")
 def register_user(request: RegisterRequest, db: Session = Depends(get_db)):

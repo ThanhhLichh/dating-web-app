@@ -704,4 +704,11 @@
   .meta-info { justify-content: center; }
   .modal-box { width: 90%; padding: 20px; }
   .grid-info { grid-template-columns: 1fr; }
+
+  .avatar {
+  width: 150px !important;
+  height: 150px !important;
+  image-rendering: crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+}
 }

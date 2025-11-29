@@ -29,6 +29,9 @@ const images = [img1, img2, img3];
 const [current, setCurrent] = useState(0);
 const [isAnimating, setIsAnimating] = useState(false);
 const [direction, setDirection] = useState("next");
+const strongPasswordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
 
 useEffect(() => {
   const interval = setInterval(() => {
@@ -121,6 +124,11 @@ const handlePrev = () => {
       }
     } else {
       // 🟢 Đăng ký
+       // ⛔ CHECK MẬT KHẨU TRƯỚC KHI GỬI
+      if (!strongPasswordRegex.test(form.password)) {
+        toast.error("Mật khẩu không đạt yêu cầu!");
+      return;
+      }
       await register(form);
       toast.success("Đăng ký thành công! Hãy đăng nhập.");
       setIsLogin(true);
@@ -281,6 +289,20 @@ const handlePrev = () => {
                 onChange={handleChange}
                 required
               />
+              {!isLogin && (
+                  <p style={{
+                  fontSize: "13px",
+                  color: "#e91e63",
+                  marginTop: "-6px",
+                  marginBottom: "10px",
+                  lineHeight: "1.3"
+                            }}>
+                  Mật khẩu phải có:
+                  <br />• Ít nhất <strong>8 ký tự</strong>
+                  <br />• <strong>Chữ hoa</strong>, <strong>chữ thường</strong>
+                  <br />• <strong>Số</strong> và <strong>ký tự đặc biệt</strong>
+                  </p>
+                )}
               <button type="submit" className="btn-submit">
                 {isLogin ? "Đăng nhập" : "Đăng ký"}
               </button>
