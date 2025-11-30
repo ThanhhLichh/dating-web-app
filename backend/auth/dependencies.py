@@ -37,12 +37,18 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
 
+    # 🚫🚫🚫 CHẶN USER ĐÃ BỊ BAN — THÊM PHẦN NÀY 🚫🚫🚫
+    if getattr(user, "is_banned", 0) == 1:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Tài khoản của bạn đã bị khóa bởi admin."
+        )
+
     return user
 
-# ✅ 2. Hàm kiểm tra quyền Admin (BẮT BUỘC PHẢI CÓ)
+
+# 2. Hàm kiểm tra quyền Admin
 def get_current_admin(current_user: User = Depends(get_current_user)):
-    # Kiểm tra trường role trong database
-    # Lưu ý: Bạn phải chắc chắn đã chạy lệnh SQL thêm cột role vào bảng users
     if getattr(current_user, "role", "user") != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

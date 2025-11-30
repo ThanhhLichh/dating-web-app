@@ -22,10 +22,17 @@ def login_user(request: LoginRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không đúng")
 
+    # 🚫 CHẶN USER BỊ BAN — THÊM Ở ĐÂY
+    if user.is_banned == 1:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Tài khoản của bạn đã bị khóa bởi admin."
+        )
+
     if not verify_password(request.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không đúng")
 
-    # ❌ CHẶN ADMIN LOGIN TẠI ROUTE NÀY
+    # ❌ CHẶN ADMIN LOGIN TẠI ROUTE USER
     if user.is_admin == 1:
         raise HTTPException(
             status_code=403,
@@ -45,6 +52,7 @@ def login_user(request: LoginRequest, db: Session = Depends(get_db)):
         "access_token": access_token,
         "token_type": "bearer"
     }
+
 
 
 
